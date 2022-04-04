@@ -1,0 +1,65 @@
+{
+  "title": "Music Assistant",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set-up Music Assistant",
+        "description": "Please configure which Home Assistant media players you would like to use with Music Assistant.",
+        "data": {
+          "player_entities": "Player entities",
+          "hide_source_players": "Hide source players in the Home Assistant UI.",
+          "create_mass_players": "Create mediaplayers for Music Assistant players in Home Assistant."
+        }
+      },
+      "music": {
+        "title": "Set-up Music Assistant",
+        "description": "Please configure which music providers you want to enable. For each enabled music provider, enter your credentials below.",
+        "data": {
+          "spotify_enabled": "Enable Spotify music provider",
+          "spotify_username": "Username for Spotify",
+          "spotify_password": "Password for Spotify",
+          "qobuz_enabled": "Enable Qobuz music provider",
+          "qobuz_username": "Username for Qobuz",
+          "qobuz_password": "Password for Qobuz",
+          "tunein_enabled": "Enable Tune-In Radio music provider",
+          "tunein_username": "Username for Tune-In Radio"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "[%key:common::config_flow::error::invalid_auth%]",
+      "unknown": "[%key:common::config_flow::error::unknown%]",
+      "duplicate_entry": "That host has already been added."
+    },
+    "abort": {
+      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configure Music Assistant",
+        "description": "Configure which Home Assistant media players you would like to use with Music Assistant.",
+        "data": {
+          "player_entities": "Player entities",
+          "hide_source_players": "Hide source players in the Home Assistant UI.",
+          "create_mass_players": "Create mediaplayers for Music Assistant players in Home Assistant."
+        }
+      },
+      "music": {
+        "title": "Configure Music Assistant",
+        "description": "Configure which music providers you want to enable. For each enabled music provider, enter your credentials below.",
+        "data": {
+          "spotify_enabled": "Enable Spotify music provider",
+          "spotify_username": "Username for Spotify",
+          "spotify_password": "Password for Spotify",
+          "qobuz_enabled": "Enable Qobuz music provider",
+          "qobuz_username": "Username for Qobuz",
+          "qobuz_password": "Password for Qobuz",
+          "tunein_enabled": "Enable Tune-In Radio music provider",
+          "tunein_username": "Username for Tune-In Radio"
+        }
+      }
+    }
+  }
+}
