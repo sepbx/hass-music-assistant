@@ -16,7 +16,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from music_assistant import MusicAssistant
 from music_assistant.models.player_queue import PlayerQueue
 
-from .const import  DISPATCH_KEY_QUEUE_ADDED, DOMAIN
+from .const import DISPATCH_KEY_QUEUE_ADDED, DOMAIN
 from .entity import MassPlayerQueueEntityBase
 
 

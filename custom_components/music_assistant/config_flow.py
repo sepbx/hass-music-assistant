@@ -2,16 +2,12 @@
 
 from typing import Any, Dict, List
 
-
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.core import callback
-
-
 from homeassistant.components.media_player import DOMAIN as MP_DOMAIN
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import entity_registry as er, selector
-
+from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import selector
 
 from .const import (
     CONF_CREATE_MASS_PLAYERS,
@@ -124,7 +120,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data[CONF_PLAYER_ENTITIES],
                 self.data[CONF_HIDE_SOURCE_PLAYERS],
             )
-            return self.async_create_entry(title=DEFAULT_NAME, data={}, options=self.data)
+            return self.async_create_entry(
+                title=DEFAULT_NAME, data={}, options=self.data
+            )
 
         return self.async_show_form(
             step_id="music",

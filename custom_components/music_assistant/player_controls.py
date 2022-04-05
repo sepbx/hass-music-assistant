@@ -1,20 +1,19 @@
 """Support Home Assistant media_player entities to be used as Players for Music Assistant."""
 from __future__ import annotations
-from typing import Dict, List
 
-from homeassistant.components.cast.const import (
-    CAST_MULTIZONE_MANAGER_KEY,
-    DOMAIN as CAST_DOMAIN,
-)
+from typing import Dict
+
+from custom_components.music_assistant.const import CONF_PLAYER_ENTITIES, DOMAIN
+from homeassistant.components.cast.const import CAST_MULTIZONE_MANAGER_KEY
+from homeassistant.components.cast.const import DOMAIN as CAST_DOMAIN
 from homeassistant.components.media_player import DOMAIN as MP_DOMAIN
 from homeassistant.components.media_player.const import (
     ATTR_MEDIA_CONTENT_ID,
     ATTR_MEDIA_CONTENT_TYPE,
     ATTR_MEDIA_POSITION,
-    ATTR_MEDIA_VOLUME_LEVEL,
     ATTR_MEDIA_POSITION_UPDATED_AT,
+    ATTR_MEDIA_VOLUME_LEVEL,
 )
-from homeassistant.util.dt import utcnow
 from homeassistant.components.media_player.const import DOMAIN as MEDIA_PLAYER_DOMAIN
 from homeassistant.components.media_player.const import (
     SERVICE_JOIN,
@@ -32,22 +31,22 @@ from homeassistant.const import (
     SERVICE_TURN_OFF,
     SERVICE_TURN_ON,
     SERVICE_VOLUME_SET,
+    STATE_IDLE,
     STATE_OFF,
+    STATE_ON,
+    STATE_PAUSED,
+    STATE_PLAYING,
+    STATE_STANDBY,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
-    STATE_ON,
-    STATE_PLAYING,
-    STATE_PAUSED,
-    STATE_STANDBY,
-    STATE_IDLE,
 )
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import Event
-from homeassistant.helpers import entity_registry as er, device_registry as dr
 from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.util.dt import utcnow
 from music_assistant import MusicAssistant
-from music_assistant.models.player import DeviceInfo, Player, PlayerState, PlayerGroup
-
-from custom_components.music_assistant.const import CONF_PLAYER_ENTITIES, DOMAIN
+from music_assistant.models.player import DeviceInfo, Player, PlayerGroup, PlayerState
 
 OFF_STATES = [STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_STANDBY]
 

@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from async_timeout import timeout
 from homeassistant.components.media_player.const import (
     MEDIA_CLASS_ALBUM,
     MEDIA_CLASS_ARTIST,

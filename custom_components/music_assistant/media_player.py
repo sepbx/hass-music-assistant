@@ -2,12 +2,9 @@
 from __future__ import annotations
 
 from homeassistant.components import media_source
-from homeassistant.components.media_player import BrowseMedia, MediaPlayerEntity, MediaPlayerEntityDescription
+from homeassistant.components.media_player import BrowseMedia, MediaPlayerEntity
 from homeassistant.components.media_player.const import (
     ATTR_MEDIA_ENQUEUE,
-    MEDIA_CLASS_CHANNEL,
-    MEDIA_CLASS_DIRECTORY,
-    MEDIA_TYPE_MUSIC,
     SUPPORT_BROWSE_MEDIA,
     SUPPORT_CLEAR_PLAYLIST,
     SUPPORT_NEXT_TRACK,
@@ -22,13 +19,11 @@ from homeassistant.components.media_player.const import (
     SUPPORT_VOLUME_MUTE,
     SUPPORT_VOLUME_SET,
     SUPPORT_VOLUME_STEP,
-    
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.const import ATTR_ENTITY_ID
-
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.dt import utcnow
 from music_assistant import MusicAssistant
@@ -36,16 +31,8 @@ from music_assistant.helpers.images import get_image_url
 from music_assistant.models.media_items import MediaType
 from music_assistant.models.player_queue import PlayerQueue, QueueOption
 
+from .const import DISPATCH_KEY_QUEUE_ADDED, DOMAIN
 from .entity import MassPlayerQueueEntityBase
-
-from .const import (
-    DISPATCH_KEY_QUEUE_ADDED,
-    DOMAIN,
-)
-from .media_source import (
-    LIBRARY_MEDIA_CLASS_MAP,
-    LIBRARY_TITLE_MAP,
-)
 
 SUPPORTED_FEATURES = (
     SUPPORT_PAUSE
@@ -92,8 +79,6 @@ async def async_setup_entry(
     )
 
 
-
-
 class MassPlayer(MassPlayerQueueEntityBase, MediaPlayerEntity):
     """Representation of MediaPlayerEntity from Music Assistant PlayerQueue."""
 
@@ -107,7 +92,9 @@ class MassPlayer(MassPlayerQueueEntityBase, MediaPlayerEntity):
             "is_group": queue.player.is_group,
         }
         if queue.player.is_group:
-            self._attr_extra_state_attributes[ATTR_ENTITY_ID] = queue.player.group_childs
+            self._attr_extra_state_attributes[
+                ATTR_ENTITY_ID
+            ] = queue.player.group_childs
 
     async def async_on_update(self) -> None:
         """Handle player updates."""
@@ -204,7 +191,9 @@ class MassPlayer(MassPlayerQueueEntityBase, MediaPlayerEntity):
         )
         await self.queue.play_media(media_id, queue_opt)
 
-    async def async_browse_media(self, media_content_type=None, media_content_id=None):
+    async def async_browse_media(
+        self, media_content_type=None, media_content_id=None
+    ) -> BrowseMedia:
         """Implement the websocket media browsing helper."""
         return await media_source.async_browse_media(
             self.hass,
@@ -212,48 +201,3 @@ class MassPlayer(MassPlayerQueueEntityBase, MediaPlayerEntity):
             content_filter=lambda item: item.media_content_type.startswith("audio/")
             or item.media_content_type == DOMAIN,
         )
-
-    async def async_browse_media(
-        self,
-        media_content_type: str | None = None,
-        media_content_id: str | None = None,
-    ) -> BrowseMedia:
-        """Return a BrowseMedia instance."""
-
-        def audio_content_filter(item):
-            """Filter non audio content."""
-            return True
-            # return item.media_content_type.startswith("audio/")
-
-        content_filter = audio_content_filter
-
-        return await media_source.async_browse_media(
-            self.hass, media_content_id, content_filter=content_filter
-        )
-
-    @callback
-    def _build_main_listing(self):
-        """Build main browse listing."""
-        parent_source = BrowseMedia(
-            media_class=MEDIA_CLASS_CHANNEL,
-            media_content_id=None,
-            media_content_type=MEDIA_TYPE_MUSIC,
-            title=self.name,
-            can_play=False,
-            can_expand=True,
-            children_media_class=MEDIA_CLASS_DIRECTORY,
-            children=[],
-        )
-        for library, media_class in LIBRARY_MEDIA_CLASS_MAP.items():
-            child_source = BrowseMedia(
-                media_class=MEDIA_CLASS_DIRECTORY,
-                media_content_id=library,
-                media_content_type=MEDIA_TYPE_MUSIC,
-                title=LIBRARY_TITLE_MAP[library],
-                children_media_class=media_class,
-                can_play=False,
-                can_expand=True,
-            )
-            parent_source.children.append(child_source)
-        return parent_source
-

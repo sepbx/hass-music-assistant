@@ -6,12 +6,7 @@ from homeassistant.helpers.entity import DeviceInfo, Entity
 from music_assistant import MusicAssistant
 from music_assistant.models.player_queue import PlayerQueue
 
-from .const import (
-    DEFAULT_NAME,
-    DISPATCH_KEY_QUEUE_ADDED,
-    DISPATCH_KEY_QUEUE_UPDATE,
-    DOMAIN,
-)
+from .const import DEFAULT_NAME, DISPATCH_KEY_QUEUE_UPDATE, DOMAIN
 
 
 class MassPlayerQueueEntityBase(Entity):

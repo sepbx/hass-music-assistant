@@ -1,9 +1,8 @@
 """Music Assistant (music-assistant.github.io) integration."""
 
-import asyncio
-import logging
 from typing import Any
 
+from custom_components.music_assistant.player_controls import HassPlayerControls
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EVENT_CALL_SERVICE, EVENT_HOMEASSISTANT_STOP
 from homeassistant.core import Event
@@ -19,12 +18,8 @@ from music_assistant.providers.qobuz import QobuzProvider
 from music_assistant.providers.spotify import SpotifyProvider
 from music_assistant.providers.tunein import TuneInProvider
 
-from custom_components.music_assistant.player_controls import HassPlayerControls
-
 from .const import (
     CONF_CREATE_MASS_PLAYERS,
-    CONF_HIDE_SOURCE_PLAYERS,
-    CONF_PLAYER_ENTITIES,
     CONF_QOBUZ_ENABLED,
     CONF_QOBUZ_PASSWORD,
     CONF_QOBUZ_USERNAME,
@@ -33,13 +28,10 @@ from .const import (
     CONF_SPOTIFY_USERNAME,
     CONF_TUNEIN_ENABLED,
     CONF_TUNEIN_USERNAME,
-    DEFAULT_NAME,
     DISPATCH_KEY_QUEUE_ADDED,
     DISPATCH_KEY_QUEUE_UPDATE,
     DOMAIN,
 )
-
-_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup(hass, config):
