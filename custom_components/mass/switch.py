@@ -10,14 +10,14 @@ from homeassistant.components.switch import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from music_assistant import MusicAssistant
-from music_assistant.models.player_queue import PlayerQueue
+from music_assistant.constants import EventType
+from music_assistant.models.player import Player
 
-from .const import DISPATCH_KEY_QUEUE_ADDED, DOMAIN
-from .entity import MassPlayerQueueEntityBase
+from .const import DOMAIN
+from .entity import MassBaseEntity
 
 
 async def async_setup_entry(
@@ -27,32 +27,32 @@ async def async_setup_entry(
 ) -> None:
     """Set up MusicAssistant switch platform."""
     mass: MusicAssistant = hass.data[DOMAIN]
+    added_ids = set()
 
-    async def async_add_switch_entities(queue: PlayerQueue) -> None:
+    async def async_add_switch_entities(evt: EventType, player: Player) -> None:
         """Add switch entities from Music Assistant PlayerQueue."""
+        if player.player_id in added_ids:
+            return
+        added_ids.add(player.player_id)
         async_add_entities(
             [
-                ShuffleEnabledEntity(mass, queue),
-                RepeatEnabledEntity(mass, queue),
-                NormalizeEnabledEntity(mass, queue),
+                ShuffleEnabledEntity(mass, player),
+                RepeatEnabledEntity(mass, player),
+                NormalizeEnabledEntity(mass, player),
             ]
         )
 
     # add all current items in controller
-    for queue in mass.players.player_queues:
-        await async_add_switch_entities(queue)
+    for player in mass.players:
+        await async_add_switch_entities(EventType.PLAYER_ADDED, player)
 
-    # register listener for new queues
+    # register listener for new players
     config_entry.async_on_unload(
-        async_dispatcher_connect(
-            hass,
-            DISPATCH_KEY_QUEUE_ADDED,
-            async_add_switch_entities,
-        )
+        mass.subscribe(async_add_switch_entities, EventType.PLAYER_ADDED)
     )
 
 
-class ShuffleEnabledEntity(MassPlayerQueueEntityBase, SwitchEntity):
+class ShuffleEnabledEntity(MassBaseEntity, SwitchEntity):
     """Representation of a Switch entity to set shuffle enabled."""
 
     entity_description = SwitchEntityDescription(
@@ -77,7 +77,7 @@ class ShuffleEnabledEntity(MassPlayerQueueEntityBase, SwitchEntity):
         await self.queue.set_shuffle_enabled(False)
 
 
-class RepeatEnabledEntity(MassPlayerQueueEntityBase, SwitchEntity):
+class RepeatEnabledEntity(MassBaseEntity, SwitchEntity):
     """Representation of a Switch entity to set repeat enabled."""
 
     entity_description = SwitchEntityDescription(
@@ -102,7 +102,7 @@ class RepeatEnabledEntity(MassPlayerQueueEntityBase, SwitchEntity):
         await self.queue.set_repeat_enabled(False)
 
 
-class NormalizeEnabledEntity(MassPlayerQueueEntityBase, SwitchEntity):
+class NormalizeEnabledEntity(MassBaseEntity, SwitchEntity):
     """Representation of a Switch entity to set volume normalization enabled."""
 
     entity_description = SwitchEntityDescription(

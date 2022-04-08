@@ -22,7 +22,23 @@
           "qobuz_username": "Username for Qobuz",
           "qobuz_password": "Password for Qobuz",
           "tunein_enabled": "Enable Tune-In Radio music provider",
-          "tunein_username": "Username for Tune-In Radio"
+          "tunein_username": "Username for Tune-In Radio",
+          "filesystem_enabled": "Enable filesystem provider",
+          "filesystem_directory": "Directory on disk to your music files.",
+          "playlists_directory": "Directory on disk to your playlists (m3u) files (optional)."
+        },
+        "data_description": {
+          "filesystem_directory": "Specify the full path on disk where your media files are stored (e.g. /media). Note that Home Assistant must have access to this location."
+        }
+      },
+      "adv": {
+        "title": "Configure Music Assistant",
+        "description": "Configure advanced options for Music Assistant.",
+        "data": {
+          "mute_power_players": "Use mute as power control for these players."
+        },
+        "data_description": {
+          "mute_power_players": "Some players do not have a good/real power on/off or this disturbs with grouped playback (e.g. cast). With this option you can use the mute control as power for these players."
         }
       }
     },
@@ -57,7 +73,23 @@
           "qobuz_username": "Username for Qobuz",
           "qobuz_password": "Password for Qobuz",
           "tunein_enabled": "Enable Tune-In Radio music provider",
-          "tunein_username": "Username for Tune-In Radio"
+          "tunein_username": "Username for Tune-In Radio",
+          "filesystem_enabled": "Enable filesystem provider",
+          "filesystem_directory": "Directory on disk to your music files.",
+          "playlists_directory": "Directory on disk to your playlists (m3u) files (optional)."
+        },
+        "data_description": {
+          "filesystem_directory": "Specify the full path on disk where your media files are stored (e.g. /media). Note that Home Assistant must have access to this location."
+        }
+      },
+      "adv": {
+        "title": "Configure Music Assistant",
+        "description": "Configure advanced options for Music Assistant.",
+        "data": {
+          "mute_power_players": "Use mute as power control for these players."
+        },
+        "data_description": {
+          "mute_power_players": "Some players do not have a good/real power on/off or this disturbs with grouped playback (e.g. cast). With this option you can use the mute control as power for these players."
         }
       }
     }

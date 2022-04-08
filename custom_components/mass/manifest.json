@@ -1,16 +1,16 @@
 {
-  "domain": "music_assistant",
+  "domain": "mass",
   "name": "Music Assistant Media library manager",
   "version": "1.0.0",
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/music_assistant",
+  "documentation": "https://github.com/music-assistant/hass-music-assistant",
   "requirements": [
-    "music-assistant==1.0.1"
+    "music-assistant==1.0.10"
   ],
   "codeowners": [
     "@marcelveldt"
   ],
   "after_dependencies": [
-    "media_source"
+    "media_source", "media_player", "group"
   ]
 }

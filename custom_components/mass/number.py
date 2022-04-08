@@ -5,14 +5,14 @@ from homeassistant.components.number import NumberEntity, NumberEntityDescriptio
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import TIME_SECONDS
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from music_assistant import MusicAssistant
-from music_assistant.models.player_queue import PlayerQueue
+from music_assistant.constants import EventType
+from music_assistant.models.player import Player
 
-from .const import DISPATCH_KEY_QUEUE_ADDED, DOMAIN
-from .entity import MassPlayerQueueEntityBase
+from .const import DOMAIN
+from .entity import MassBaseEntity
 
 
 async def async_setup_entry(
@@ -22,31 +22,31 @@ async def async_setup_entry(
 ) -> None:
     """Set up MusicAssistant number platform."""
     mass: MusicAssistant = hass.data[DOMAIN]
+    added_ids = set()
 
-    async def async_add_number_entities(queue: PlayerQueue) -> None:
-        """Add number entities from Music Assistant PlayerQueue."""
+    async def async_add_number_entities(evt: EventType, player: Player) -> None:
+        """Add number entities from Music Assistant Player."""
+        if player.player_id in added_ids:
+            return
+        added_ids.add(player.player_id)
         async_add_entities(
             [
-                CrossfadeDurationEntity(mass, queue),
-                VolumeNormalizationTargetEntity(mass, queue),
+                CrossfadeDurationEntity(mass, player),
+                VolumeNormalizationTargetEntity(mass, player),
             ]
         )
 
     # add all current items in controller
-    for queue in mass.players.player_queues:
-        await async_add_number_entities(queue)
+    for player in mass.players:
+        await async_add_number_entities(EventType.PLAYER_ADDED, player)
 
-    # register listener for new queues
+    # register listener for new players
     config_entry.async_on_unload(
-        async_dispatcher_connect(
-            hass,
-            DISPATCH_KEY_QUEUE_ADDED,
-            async_add_number_entities,
-        )
+        mass.subscribe(async_add_number_entities, EventType.PLAYER_ADDED)
     )
 
 
-class CrossfadeDurationEntity(MassPlayerQueueEntityBase, NumberEntity):
+class CrossfadeDurationEntity(MassBaseEntity, NumberEntity):
     """Representation of a number entity to set the crossfade duration."""
 
     entity_description = NumberEntityDescription(
@@ -70,7 +70,7 @@ class CrossfadeDurationEntity(MassPlayerQueueEntityBase, NumberEntity):
         await self.queue.set_crossfade_duration(int(value))
 
 
-class VolumeNormalizationTargetEntity(MassPlayerQueueEntityBase, NumberEntity):
+class VolumeNormalizationTargetEntity(MassBaseEntity, NumberEntity):
     """Representation of a number entity to set the volume normalization target."""
 
     entity_description = NumberEntityDescription(

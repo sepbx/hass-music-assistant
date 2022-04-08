@@ -1,16 +1,9 @@
 """Constants for Music Assistant Component."""
 
 
-DOMAIN = "music_assistant"
+DOMAIN = "mass"
 
 DEFAULT_NAME = "Music Assistant"
-
-DISPATCH_KEY_PLAYERS = "mass_media_player"
-DISPATCH_KEY_PLAYER_UPDATE = "mass_media_player_update"
-DISPATCH_KEY_QUEUE_UPDATE = "mass_queue_update"
-DISPATCH_KEY_QUEUE_ADDED = "mass_queue_added"
-DISPATCH_KEY_QUEUE_TIME_UPDATE = "mass_queue_time_update"
-DISPATCH_KEY_PLAYER_REMOVED = "mass_media_player_removed"
 
 CONF_PLAYER_ENTITIES = "player_entities"
 CONF_HIDE_SOURCE_PLAYERS = "hide_source_players"
@@ -26,3 +19,17 @@ CONF_QOBUZ_PASSWORD = "qobuz_password"
 
 CONF_TUNEIN_ENABLED = "tunein_enabled"
 CONF_TUNEIN_USERNAME = "tunein_username"
+
+CONF_FILE_ENABLED = "filesystem_enabled"
+CONF_FILE_DIRECTORY = "filesystem_directory"
+CONF_PLAYLISTS_DIRECTORY = "playlists_directory"
+
+CONF_MUTE_POWER_PLAYERS = "mute_power_players"
+
+
+ATTR_SOURCE_ENTITY_ID = "source_entity_id"
+ATTR_IS_GROUP = "is_group"
+ATTR_GROUP_CHILDS = "group_childs"
+ATTR_GROUP_PARENTS = "group_parents"
+ATTR_ACTIVE_QUEUE = "active_queue"
+ATTR_QUEUE_ITEMS = "items_in_queue"

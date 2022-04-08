@@ -25,9 +25,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install tox tox-gh-actions pre-commit
+          pip install -r requirements_dev.txt
           pre-commit install-hooks
       - name: Lint with pre-commit
         run: pre-commit run --all-files
-      - name: Test with tox
-        run: tox
+      - name: Run pylint on changed files
+        run: |
+          pylint -rn -sn --rcfile=pylintrc --fail-on=I $(git ls-files '*.py')
+
