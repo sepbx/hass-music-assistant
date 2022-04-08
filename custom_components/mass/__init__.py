@@ -93,6 +93,7 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
 
     # register hass players with mass
     controls = HassPlayerControls(hass, mass, entry.options)
+    hass.create_task(controls.async_register_player_controls())
 
     async def handle_hass_event(event: Event):
         """Handle an incoming event from Home Assistant."""
