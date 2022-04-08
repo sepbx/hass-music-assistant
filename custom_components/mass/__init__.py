@@ -2,7 +2,12 @@
 from __future__ import annotations
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EVENT_CALL_SERVICE, EVENT_HOMEASSISTANT_STOP
+from homeassistant.const import (
+    EVENT_CALL_SERVICE,
+    EVENT_HOMEASSISTANT_START,
+    EVENT_HOMEASSISTANT_STOP,
+    EVENT_STATE_CHANGED,
+)
 from homeassistant.core import Event
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
@@ -74,7 +79,11 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
                 )
             )
     except MusicAssistantError as err:
+        await mass.stop()
         raise ConfigEntryNotReady from err
+    except Exception as exc:  # pylint: disable=broad-except
+        await mass.stop()
+        raise ConfigEntryNotReady from exc
 
     hass.data[DOMAIN] = mass
 
@@ -84,18 +93,22 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
 
     # register hass players with mass
     controls = HassPlayerControls(hass, mass, entry.options)
-    hass.async_create_task(controls.async_register_player_controls())
 
     async def handle_hass_event(event: Event):
         """Handle an incoming event from Home Assistant."""
         if event.event_type == EVENT_HOMEASSISTANT_STOP:
             await mass.stop()
+        elif event.event_type == EVENT_HOMEASSISTANT_START:
+            await controls.async_register_player_controls()
         elif event.event_type == EVENT_CALL_SERVICE:
             await async_intercept_play_media(event, controls)
 
+    # setup event listeners, register their unsubscribe in the unload
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, handle_hass_event)
+    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, handle_hass_event)
     entry.async_on_unload(entry.add_update_listener(_update_listener))
     entry.async_on_unload(
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, handle_hass_event)
+        hass.bus.async_listen(EVENT_STATE_CHANGED, controls.async_hass_state_event)
     )
     entry.async_on_unload(hass.bus.async_listen(EVENT_CALL_SERVICE, handle_hass_event))
 

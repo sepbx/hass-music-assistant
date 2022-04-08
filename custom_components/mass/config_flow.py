@@ -168,7 +168,9 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 self.data[CONF_PLAYER_ENTITIES],
                 self.data[CONF_HIDE_SOURCE_PLAYERS],
             )
-            return self.async_create_entry(title=DEFAULT_NAME, options={**self.data})
+            return self.async_create_entry(
+                title=DEFAULT_NAME, data={}, options={**self.data}
+            )
 
         return self.async_show_form(
             step_id="adv",

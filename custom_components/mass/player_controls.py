@@ -20,7 +20,6 @@ from homeassistant.components.media_player.const import (
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_SUPPORTED_FEATURES,
-    EVENT_STATE_CHANGED,
     SERVICE_MEDIA_PAUSE,
     SERVICE_MEDIA_PLAY,
     SERVICE_MEDIA_STOP,
@@ -329,9 +328,6 @@ class HassPlayerControls:
 
         for entity in self.hass.states.async_all(MEDIA_PLAYER_DOMAIN):
             await self.async_register_player_control(entity.entity_id)
-
-        # subscribe to HomeAssistant state changed events
-        self.hass.bus.async_listen(EVENT_STATE_CHANGED, self.async_hass_state_event)
 
     async def async_register_player_control(
         self, entity_id: str, manual=False
