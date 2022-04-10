@@ -33,3 +33,7 @@ ATTR_GROUP_CHILDS = "group_childs"
 ATTR_GROUP_PARENTS = "group_parents"
 ATTR_ACTIVE_QUEUE = "active_queue"
 ATTR_QUEUE_ITEMS = "items_in_queue"
+
+
+SQUEEZEBOX_DOMAIN = "squeezebox_local"
+SQUEEZEBOX_EVENT = "squeezebox_local_player_event"

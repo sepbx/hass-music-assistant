@@ -8,8 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from music_assistant import MusicAssistant
-from music_assistant.constants import EventType
-from music_assistant.models.player import Player
+from music_assistant.constants import EventType, MassEvent
 
 from .const import DOMAIN
 from .entity import MassBaseEntity
@@ -24,26 +23,28 @@ async def async_setup_entry(
     mass: MusicAssistant = hass.data[DOMAIN]
     added_ids = set()
 
-    async def async_add_number_entities(evt: EventType, player: Player) -> None:
+    async def async_add_number_entities(event: MassEvent) -> None:
         """Add number entities from Music Assistant Player."""
-        if player.player_id in added_ids:
+        if event.object_id in added_ids:
             return
-        added_ids.add(player.player_id)
+        added_ids.add(event.object_id)
         async_add_entities(
             [
-                CrossfadeDurationEntity(mass, player),
-                VolumeNormalizationTargetEntity(mass, player),
+                CrossfadeDurationEntity(mass, event.data),
+                VolumeNormalizationTargetEntity(mass, event.data),
             ]
         )
-
-    # add all current items in controller
-    for player in mass.players:
-        await async_add_number_entities(EventType.PLAYER_ADDED, player)
 
     # register listener for new players
     config_entry.async_on_unload(
         mass.subscribe(async_add_number_entities, EventType.PLAYER_ADDED)
     )
+
+    # add all current items in controller
+    for player in mass.players:
+        await async_add_number_entities(
+            MassEvent(EventType.PLAYER_ADDED, object_id=player.player_id, data=player)
+        )
 
 
 class CrossfadeDurationEntity(MassBaseEntity, NumberEntity):

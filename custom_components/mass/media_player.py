@@ -18,6 +18,7 @@ from homeassistant.components.media_player.const import (
     SUPPORT_PLAY,
     SUPPORT_PLAY_MEDIA,
     SUPPORT_PREVIOUS_TRACK,
+    SUPPORT_REPEAT_SET,
     SUPPORT_SHUFFLE_SET,
     SUPPORT_STOP,
     SUPPORT_TURN_OFF,
@@ -31,7 +32,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.dt import utcnow
 from music_assistant import MusicAssistant
-from music_assistant.constants import EventType
+from music_assistant.constants import EventType, MassEvent
 from music_assistant.helpers.images import get_image_url
 from music_assistant.models.media_items import MediaType
 from music_assistant.models.player import Player, PlayerState
@@ -55,6 +56,7 @@ SUPPORTED_FEATURES = (
     | SUPPORT_PREVIOUS_TRACK
     | SUPPORT_NEXT_TRACK
     | SUPPORT_SHUFFLE_SET
+    | SUPPORT_REPEAT_SET
     | SUPPORT_TURN_ON
     | SUPPORT_TURN_OFF
     | SUPPORT_PLAY
@@ -81,12 +83,12 @@ async def async_setup_entry(
     mass: MusicAssistant = hass.data[DOMAIN]
     added_ids = set()
 
-    async def async_add_player(evt: EventType, player: Player) -> None:
+    async def async_add_player(event: MassEvent) -> None:
         """Add MediaPlayerEntity from Music Assistant Player."""
-        if player.player_id in added_ids:
+        if event.object_id in added_ids:
             return
-        added_ids.add(player.player_id)
-        async_add_entities([MassPlayer(mass, player)])
+        added_ids.add(event.object_id)
+        async_add_entities([MassPlayer(mass, event.data)])
 
     # register listener for new players
     config_entry.async_on_unload(
@@ -95,7 +97,9 @@ async def async_setup_entry(
 
     # add all current items in controller
     for player in mass.players:
-        await async_add_player(EventType.PLAYER_ADDED, player)
+        await async_add_player(
+            MassEvent(EventType.PLAYER_ADDED, object_id=player.player_id, data=player)
+        )
 
 
 class MassPlayer(MassBaseEntity, MediaPlayerEntity):
@@ -258,9 +262,9 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
         """Set shuffle state."""
         await self.player.active_queue.set_shuffle_enabled(shuffle)
 
-    async def async_set_repeat(self, repeat: bool) -> None:
+    async def async_set_repeat(self, repeat: str) -> None:
         """Set repeat state."""
-        await self.player.active_queue.set_shuffle_enabled(repeat)
+        await self.player.active_queue.set_repeat_enabled(repeat != "off")
 
     async def async_clear_playlist(self) -> None:
         """Clear players playlist."""

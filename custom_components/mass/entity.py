@@ -3,9 +3,8 @@ from __future__ import annotations
 
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from music_assistant import MusicAssistant
-from music_assistant.constants import EventType
+from music_assistant.constants import EventType, MassEvent
 from music_assistant.models.player import Player
-from music_assistant.models.player_queue import PlayerQueue
 
 from .const import DEFAULT_NAME, DOMAIN
 
@@ -33,8 +32,13 @@ class MassBaseEntity(Entity):
         await self.async_on_update()
         self.async_on_remove(
             self.mass.subscribe(
+                self.__on_mass_update, EventType.PLAYER_UPDATED, self.player.player_id
+            )
+        )
+        self.async_on_remove(
+            self.mass.subscribe(
                 self.__on_mass_update,
-                (EventType.PLAYER_CHANGED, EventType.QUEUE_UPDATED),
+                EventType.QUEUE_UPDATED,
             )
         )
 
@@ -59,13 +63,10 @@ class MassBaseEntity(Entity):
             return f"{_base} {self.entity_description.name}"
         return _base
 
-    async def __on_mass_update(self, event: EventType, data: Player | PlayerQueue):
+    async def __on_mass_update(self, event: MassEvent) -> None:
         """Call when we receive an event from MusicAssistant."""
-        if event == EventType.PLAYER_CHANGED:
-            if data.player_id != self.player.player_id:
-                return
         if event == EventType.QUEUE_UPDATED:
-            if data.queue_id != self.player.active_queue.queue_id:
+            if event.object_id != self.player.active_queue.queue_id:
                 return
         await self.async_on_update()
         self.async_write_ha_state()

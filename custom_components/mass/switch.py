@@ -13,8 +13,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from music_assistant import MusicAssistant
-from music_assistant.constants import EventType
-from music_assistant.models.player import Player
+from music_assistant.constants import EventType, MassEvent
 
 from .const import DOMAIN
 from .entity import MassBaseEntity
@@ -29,27 +28,29 @@ async def async_setup_entry(
     mass: MusicAssistant = hass.data[DOMAIN]
     added_ids = set()
 
-    async def async_add_switch_entities(evt: EventType, player: Player) -> None:
+    async def async_add_switch_entities(event: MassEvent) -> None:
         """Add switch entities from Music Assistant PlayerQueue."""
-        if player.player_id in added_ids:
+        if event.object_id in added_ids:
             return
-        added_ids.add(player.player_id)
+        added_ids.add(event.object_id)
         async_add_entities(
             [
-                ShuffleEnabledEntity(mass, player),
-                RepeatEnabledEntity(mass, player),
-                NormalizeEnabledEntity(mass, player),
+                ShuffleEnabledEntity(mass, event.data),
+                RepeatEnabledEntity(mass, event.data),
+                NormalizeEnabledEntity(mass, event.data),
             ]
         )
-
-    # add all current items in controller
-    for player in mass.players:
-        await async_add_switch_entities(EventType.PLAYER_ADDED, player)
 
     # register listener for new players
     config_entry.async_on_unload(
         mass.subscribe(async_add_switch_entities, EventType.PLAYER_ADDED)
     )
+
+    # add all current items in controller
+    for player in mass.players:
+        await async_add_switch_entities(
+            MassEvent(EventType.PLAYER_ADDED, object_id=player.player_id, data=player)
+        )
 
 
 class ShuffleEnabledEntity(MassBaseEntity, SwitchEntity):

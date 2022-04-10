@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from typing import Dict
 
+from custom_components.mass.media_source import MEDIA_CONTENT_TYPE_FLAC
 from homeassistant.components.media_player import DOMAIN as MP_DOMAIN
 from homeassistant.components.media_player.const import (
     ATTR_MEDIA_CONTENT_ID,
@@ -36,6 +37,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
+from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import Event
@@ -49,12 +51,17 @@ from .const import (
     CONF_MUTE_POWER_PLAYERS,
     CONF_PLAYER_ENTITIES,
     DOMAIN,
+    SQUEEZEBOX_DOMAIN,
+    SQUEEZEBOX_EVENT,
 )
 
 OFF_STATES = [STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_STANDBY]
 UNAVAILABLE_STATES = [STATE_UNAVAILABLE, STATE_UNKNOWN]
 CAST_DOMAIN = "cast"
 CAST_MULTIZONE_MANAGER_KEY = "cast_multizone_manager"
+
+
+GROUP_DOMAIN = "group"
 
 
 STATE_MAPPING = {
@@ -93,7 +100,7 @@ class HassPlayer(Player):
                 manufacturer = device.manufacturer
                 model = device.model
         self._attr_device_info = DeviceInfo(manufacturer=manufacturer, model=model)
-        self.on_update_state()
+        self.update_attributes()
 
     @property
     def elapsed_time(self) -> float:
@@ -122,8 +129,15 @@ class HassPlayer(Player):
             return PlayerState.IDLE
         return self._attr_state
 
-    def on_update_state(self) -> None:
-        """Call when player state is about to be updated in the player manager."""
+    @callback
+    def on_hass_event(self, event: Event) -> None:
+        """Call on Home Assistant event."""
+        self.update_attributes()
+        self.update_state()
+
+    @callback
+    def update_attributes(self) -> None:
+        """Update attributes of this player."""
         hass_state = self.hass.states.get(self.entity_id)
         self._attr_name = hass_state.name
         self._attr_powered = hass_state.state not in OFF_STATES
@@ -144,7 +158,7 @@ class HassPlayer(Player):
             MP_DOMAIN,
             SERVICE_PLAY_MEDIA,
             {
-                ATTR_MEDIA_CONTENT_TYPE: "music",
+                ATTR_MEDIA_CONTENT_TYPE: MEDIA_CONTENT_TYPE_FLAC,
                 ATTR_MEDIA_CONTENT_ID: url,
                 "entity_id": self.entity_id,
             },
@@ -199,6 +213,39 @@ class HassPlayer(Player):
         )
 
 
+class HassSqueezeboxPlayer(HassPlayer):
+    """Representation of Hass player from Squeezebox Local integration."""
+
+    def __init__(
+        self, hass: HomeAssistantType, entity_id: str, squeeze_id: str
+    ) -> None:
+        """Initialize player."""
+        self.squeeze_id = squeeze_id
+        self.slimserver = hass.data[SQUEEZEBOX_DOMAIN]
+        self._unsubs = [
+            hass.bus.async_listen(SQUEEZEBOX_EVENT, self.on_squeezebox_event)
+        ]
+        super().__init__(hass, entity_id, False)
+
+    @callback
+    def on_remove(self) -> None:
+        """Call when player is about to be removed (cleaned up) from player manager."""
+        for unsub in self._unsubs:
+            unsub()
+        self._unsubs = []
+
+    @callback
+    def on_squeezebox_event(self, event: Event) -> None:
+        """Handle special events from squeezebox players."""
+        if event.data["player_id"] != self.squeeze_id:
+            return
+        cmd = event.data["command_str"]
+        if cmd == "playlist index +1":
+            self.hass.create_task(self.active_queue.next())
+        if cmd == "playlist index -1":
+            self.hass.create_task(self.active_queue.previous())
+
+
 class HassGroupPlayer(PlayerGroup):
     """Mapping from Home Assistant Grouped Mediaplayer to Music Assistant Player."""
 
@@ -214,7 +261,7 @@ class HassGroupPlayer(PlayerGroup):
         self._attr_device_info = DeviceInfo(
             manufacturer="Home Assistant", model="Media Player Group"
         )
-        self.on_update_state()
+        self.update_attributes()
 
     async def power(self, powered: bool) -> None:
         """Send POWER command to player."""
@@ -227,7 +274,14 @@ class HassGroupPlayer(PlayerGroup):
             MP_DOMAIN, cmd, {"entity_id": self.entity_id}
         )
 
-    def on_update_state(self) -> None:
+    @callback
+    def on_hass_event(self, event: Event) -> None:
+        """Call on Home Assistant event."""
+        self.update_attributes()
+        self.update_state()
+
+    @callback
+    def update_attributes(self) -> None:
         """Call when player state is about to be updated in the player manager."""
         hass_state = self.hass.states.get(self.entity_id)
         self._attr_available = hass_state.state not in UNAVAILABLE_STATES
@@ -276,10 +330,16 @@ class HassCastGroupPlayer(PlayerGroup, HassPlayer):
                 await self.active_queue.stop()
         self._fake_power = powered
         self.update_state()
+        # cast group players do support turn off (but not on)
+        if not powered and self.powered:
+            await self.hass.services.async_call(
+                MP_DOMAIN, SERVICE_TURN_OFF, {"entity_id": self.entity_id}
+            )
 
-    def on_update_state(self) -> None:
-        """Call when player state is about to be updated in the player manager."""
-        super().on_update_state()
+    @callback
+    def update_attributes(self) -> None:
+        """Update attributes of this player."""
+        super().update_attributes()
         # this is a bit hacky to get the group members
         # TODO: create PR to add these as state attributes to the cast integration
         # pylint: disable=protected-access
@@ -318,7 +378,7 @@ class HassPlayerControls:
             return
 
         if entity_id in self._registered_players:
-            self._registered_players[entity_id].update_state()
+            self._registered_players[entity_id].on_hass_event(event)
         else:
             # entity not (yet) registered
             await self.async_register_player_control(entity_id)
@@ -348,21 +408,24 @@ class HassPlayerControls:
 
         ent_reg = er.async_get(self.hass)
         dev_reg = dr.async_get(self.hass)
-        is_cast_group = False
+        player = None
+        # Integration specific player controls
         if ent_entry := ent_reg.async_get(entity_id):
             if ent_entry.platform == DOMAIN:
                 # this is already a Music assistant player
                 return
             if ent_entry.platform == CAST_DOMAIN:
                 if dev_entry := dev_reg.async_get(ent_entry.device_id):
-                    is_cast_group = dev_entry.model == "Google Cast Group"
+                    if dev_entry.model == "Google Cast Group":
+                        player = HassCastGroupPlayer(self.hass, entity_id)
+            elif ent_entry.platform == SQUEEZEBOX_DOMAIN:
+                player = HassSqueezeboxPlayer(self.hass, entity_id, ent_entry.unique_id)
+            elif ent_entry.platform == GROUP_DOMAIN:
+                player = HassGroupPlayer(self.hass, entity_id)
 
+        # handle genric player for all other integrations
         mute_as_power = entity_id in self.config.get(CONF_MUTE_POWER_PLAYERS, [])
-        if is_cast_group:
-            player = HassCastGroupPlayer(self.hass, entity_id)
-        elif ATTR_ENTITY_ID in entity.attributes:
-            player = HassGroupPlayer(self.hass, entity_id)
-        else:
+        if player is None:
             player = HassPlayer(self.hass, entity_id, mute_as_power)
         self._registered_players[entity_id] = player
         await self.mass.players.register_player(player)

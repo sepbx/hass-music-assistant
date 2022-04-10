@@ -104,7 +104,7 @@ class MusicAssistentSource(MediaSource):
         # to the media_player and find out the player from there.
         # Hacky but it does the job and let's hope for a contextvar in the future.
 
-        return PlayMedia(item.identifier, "audio/flac")
+        return PlayMedia(item.identifier, MEDIA_CONTENT_TYPE_FLAC)
 
     async def async_browse_media(
         self,
