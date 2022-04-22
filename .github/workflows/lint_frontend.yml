@@ -1,0 +1,34 @@
+name: Lint Vue frontend
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'custom_components/mass/frontend'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'custom_components/mass/frontend'
+  workflow_dispatch:
+
+
+defaults:
+  run:
+    working-directory: custom_components/mass/frontend
+
+env:
+  NODE_VERSION: "17.x" # set this to the node version to use
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.4.0
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2.5.1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run lint
