@@ -18,6 +18,7 @@ jobs:
 
       - name: build frontend
         run: |
+          cd custom_components/mass/frontend/
           npm install
           npm run build
 
@@ -29,9 +30,9 @@ jobs:
         run: |
           sed -i 's/v0.0.0/${{ steps.version.outputs.version }}/' custom_components/mass/manifest.json
         
-          cd custom_components/mass/
+          cd ..
           zip ../../mass.zip ./* translations/* frontend/dist/* -x '.*'
-          
+
       - uses: gacts/upload-to-release@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
