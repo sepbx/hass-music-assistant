@@ -14,6 +14,8 @@ Music Assistant consists of multiple building blocks:
 - Music Assistant 'Media Source' integration, allows browsing of your favorite media from Home Assistant's 'Media' panel.
 - Music Assistant panel: A rich user interface with more advanced features than the standard Media panel.
 
+---
+
 ### Features
 
 - Supports multiple music sources through a provider implementation.
@@ -27,19 +29,51 @@ Music Assistant consists of multiple building blocks:
 - Truly hassle free streaming of your favorite music to players, no advanced knowledge required.
 - Rich User interface (Progressive Web App) hosted as panel directly in the Home Assistant user interface.
 
+---
+
 ### Preview
-
-
-![Preview image](https://raw.githubusercontent.com/music-assistant/hass-music-assistant/main/screenshots/screen3.png)
-
 
 ![Preview image](https://raw.githubusercontent.com/music-assistant/hass-music-assistant/main/screenshots/screen1.png)
 
+<details>
+<summary>Click to show more screenshots</summary>
+
+![Preview image](https://raw.githubusercontent.com/music-assistant/hass-music-assistant/main/screenshots/screen3.png)
 
 ![Preview image](https://raw.githubusercontent.com/music-assistant/hass-music-assistant/main/screenshots/screen2.png)
 
-
 ![Preview image](https://raw.githubusercontent.com/music-assistant/hass-music-assistant/main/screenshots/screen4.png)
 
-
 ![Preview image](https://raw.githubusercontent.com/music-assistant/hass-music-assistant/main/screenshots/screen5.png)
+
+</details>
+
+---
+
+## Installation
+
+### Using HACS
+
+- In the HACS panel, go to integrations and click the 3 dots on the top right.
+- In the menu, choose `custom repositories`.
+- Paste this URL in the repository field: https://github.com/music-assistant/hass-music-assistant
+- For the category field , choose `integration`.
+- Press the `Add` button and close the dialog afterwards.
+- Once back in the `integrations page` of HACS, click the big blue button on the bottom right to add a new integration.
+- Search for `Music Assistant` and click `Download this repository with HACS`
+- Restart HA to load the integration into HA.
+
+### Manually (not recommended)
+
+- Download the [latest release](https://github.com/music-assistant/hass-music-assistant/releases) as a **zip file** and extract it into the `custom_components` folder in your HA installation.</li>
+- Restart HA to load the integration into HA.
+
+## Configuration
+
+- Go to Configuration -> Integrations and click the big `+` button.
+- Look for Music Assistant and click to add it.
+- Follow the steps for initial configuration.
+- The Music Assistant integration is ready for use.
+- You can find the panel in the menu on the left for the rich user interface or use the default Home Assistant Media panel to quickly browse your music.
+- All configuration options can be adjusted later with the `configure` button on the integration's card.
+- To change the name of the panel, simply rename the integration from the integrations page.
