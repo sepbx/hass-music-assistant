@@ -6,8 +6,12 @@ name: Test with Pre-commit and Tox
 on:
   push:
     branches: [main]
+    paths:
+      - '**.py'
   pull_request:
     branches: [main]
+    paths:
+      - '**.py'
   workflow_dispatch:
 
 jobs:
