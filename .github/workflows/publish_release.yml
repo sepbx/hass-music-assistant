@@ -17,8 +17,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: build frontend
+        working-directory: custom_components/mass/frontend/
         run: |
-          cd custom_components/mass/frontend/
           npm install
           npm run build
 
@@ -29,8 +29,8 @@ jobs:
       - name: Patch manifest and zip
         run: |
           sed -i 's/v0.0.0/${{ steps.version.outputs.version }}/' custom_components/mass/manifest.json
-        
-          cd ..
+
+          cd custom_components/mass/
           zip ../../mass.zip ./* translations/* frontend/dist/* -x '.*'
 
       - uses: gacts/upload-to-release@master
