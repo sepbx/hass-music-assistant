@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from typing import Dict
 
-from custom_components.mass.media_source import MEDIA_CONTENT_TYPE_FLAC
 from homeassistant.components.media_player import DOMAIN as MP_DOMAIN
 from homeassistant.components.media_player.const import (
     ATTR_MEDIA_CONTENT_ID,
@@ -45,6 +44,8 @@ from homeassistant.helpers.typing import HomeAssistantType
 from homeassistant.util.dt import utcnow
 from music_assistant import MusicAssistant
 from music_assistant.models.player import DeviceInfo, Player, PlayerGroup, PlayerState
+
+from custom_components.mass.media_source import MEDIA_CONTENT_TYPE_FLAC
 
 from .const import (
     ATTR_SOURCE_ENTITY_ID,
