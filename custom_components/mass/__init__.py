@@ -35,15 +35,11 @@ from .const import (
     CONF_TUNEIN_USERNAME,
     DOMAIN,
 )
+from .panel import async_register_panel
 from .player_controls import HassPlayerControls
+from .websockets import async_register_websockets
 
 PLATFORMS = ("media_player", "switch", "number")
-
-
-async def async_setup(hass, config):
-    """Set up the platform."""
-    hass.data[DOMAIN] = None
-    return True
 
 
 async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
@@ -113,6 +109,10 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     )
     entry.async_on_unload(hass.bus.async_listen(EVENT_CALL_SERVICE, handle_hass_event))
 
+    # Websocket support and frontend (panel)
+    async_register_websockets(hass)
+    entry.async_on_unload(await async_register_panel(hass, entry.title))
+
     return True
 
 
@@ -155,7 +155,7 @@ async def async_intercept_play_media(
     await player.active_queue.play_media(uri)
 
 
-async def async_unload_entry(hass, entry):
+async def async_unload_entry(hass: HomeAssistantType, entry: ConfigEntry):
     """Unload a config entry."""
     unload_success = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if mass := hass.data.pop(DOMAIN, None):
