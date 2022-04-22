@@ -77,3 +77,17 @@ Music Assistant consists of multiple building blocks:
 - You can find the panel in the menu on the left for the rich user interface or use the default Home Assistant Media panel to quickly browse your music.
 - All configuration options can be adjusted later with the `configure` button on the integration's card.
 - To change the name of the panel, simply rename the integration from the integrations page.
+
+## Usage and notes
+
+- Music from your music sources will be automatically loaded into the Music Assistant library. If you have multiple sources, they will be merged as one library.
+- In this first implementation there's only support for "Library items", so your favourited artists, albums and playlists. In a later release we'll provide options to browse the recommendations of the various streaming providers.
+- Note that at the first startup it can take a while before data is available (first sync), the Music Assistant UI will notify you about tasks being in progress.
+- Music sources are synced at integration (re)load and every 3 hours.
+- If a song is available on multiple providers (e.g. Spotify and a flac file on disk), the file/stream with the highest quality is always preferred when starting a stream.
+- While Music Assistant is built entirely in python, it requires the SoX and/or ffmpeg binaries to be present on your OS distribution for the audio processing. If will default to SoX if present but fallback to ffmpeg (which is installed by default on Home Assistant installations).
+
+## Music provider specific notes
+
+- When using Spotify as music source please note that **only Spotify Premium accounts** are supported, free accounts will not work.
+- Tune-In Radio items will not be shown in the library if your account is set to private.
