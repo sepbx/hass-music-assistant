@@ -45,8 +45,6 @@ from homeassistant.util.dt import utcnow
 from music_assistant import MusicAssistant
 from music_assistant.models.player import DeviceInfo, Player, PlayerGroup, PlayerState
 
-from custom_components.mass.media_source import MEDIA_CONTENT_TYPE_FLAC
-
 from .const import (
     ATTR_SOURCE_ENTITY_ID,
     CONF_MUTE_POWER_PLAYERS,
@@ -55,6 +53,7 @@ from .const import (
     SQUEEZEBOX_DOMAIN,
     SQUEEZEBOX_EVENT,
 )
+from .media_source import MEDIA_CONTENT_TYPE_FLAC
 
 OFF_STATES = [STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_STANDBY]
 UNAVAILABLE_STATES = [STATE_UNAVAILABLE, STATE_UNKNOWN]
