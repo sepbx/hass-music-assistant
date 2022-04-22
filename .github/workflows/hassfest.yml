@@ -2,7 +2,13 @@ name: Validate with hassfest
 
 on:
   push:
+    paths:
+      - '**.py'
+      - 'requirements_dev.txt'
   pull_request:
+    paths:
+      - '**.py'
+      - 'requirements_dev.txt'
   workflow_dispatch:
   schedule:
     - cron: "0 0 * * *"

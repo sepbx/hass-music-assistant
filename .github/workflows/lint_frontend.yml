@@ -1,11 +1,9 @@
 name: Lint Vue frontend
 on:
   push:
-    branches: [main]
     paths:
       - 'custom_components/mass/frontend/*'
   pull_request:
-    branches: [main]
     paths:
       - 'custom_components/mass/frontend/*'
   workflow_dispatch:
