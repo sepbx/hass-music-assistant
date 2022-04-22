@@ -90,4 +90,4 @@ Music Assistant consists of multiple building blocks:
 ## Music provider specific notes
 
 - When using Spotify as music source please note that **only Spotify Premium accounts** are supported, free accounts will not work.
-- Tune-In Radio items will not be shown in the library if your account is set to private.
+- Tune-In Radio will only show your favourited items in the library.
