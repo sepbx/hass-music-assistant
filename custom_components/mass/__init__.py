@@ -71,7 +71,9 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
         if conf.get(CONF_FILE_ENABLED):
             await mass.music.register_provider(
                 FileSystemProvider(
-                    conf.get(CONF_FILE_DIRECTORY), conf.get(CONF_PLAYLISTS_DIRECTORY)
+                    # empty string --> None
+                    conf.get(CONF_FILE_DIRECTORY),
+                    conf.get(CONF_PLAYLISTS_DIRECTORY) or None,
                 )
             )
     except MusicAssistantError as err:
