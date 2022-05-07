@@ -52,14 +52,11 @@ Music Assistant consists of multiple building blocks:
 
 ## Installation
 
+In the HACS panel, go to integrations and click the big orange '+' button. Search for 'Alarmo' and click \'Install this repository in HACS'.
+
 ### Using HACS
 
-- In the HACS panel, go to integrations and click the 3 dots on the top right.
-- In the menu, choose `custom repositories`.
-- Paste this URL in the repository field: https://github.com/music-assistant/hass-music-assistant
-- For the category field , choose `integration`.
-- Press the `Add` button and close the dialog afterwards.
-- Once back in the `integrations page` of HACS, click the big blue button on the bottom right to add a new integration.
+- In the HACS panel, go to integrations.
 - Search for `Music Assistant` and click `Download this repository with HACS`
 - Restart HA to load the integration into HA.
 
