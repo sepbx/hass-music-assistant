@@ -125,6 +125,8 @@ class HassPlayer(Player):
         """Return current state of player."""
         if not self._attr_available:
             return PlayerState.OFF
+        if not self.powered:
+            return PlayerState.OFF
         if self._attr_state == PlayerState.OFF and self.powered:
             return PlayerState.IDLE
         return self._attr_state
