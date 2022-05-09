@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+import os
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -133,6 +134,18 @@ async def async_remove_config_entry_device(
 ) -> bool:
     """Remove a config entry from a device."""
     return True
+
+
+async def async_remove_entry(hass: HomeAssistantType, entry: ConfigEntry) -> None:
+    """Call when entry is about to be removed."""
+    # remove the db file to allow users make a clean start
+    # backup the db file just in case of user error
+    db_file = hass.config.path("music_assistant.db")
+    db_file_old = f"{db_file}.old"
+    if os.path.isfile(db_file_old):
+        os.remove(db_file_old)
+    if os.path.isfile(db_file):
+        os.rename(db_file, db_file_old)
 
 
 async def async_intercept_play_media(
