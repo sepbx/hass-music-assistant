@@ -138,6 +138,8 @@ async def async_remove_config_entry_device(
 
 async def async_remove_entry(hass: HomeAssistantType, entry: ConfigEntry) -> None:
     """Call when entry is about to be removed."""
+    if mass := hass.data.pop(DOMAIN, None):
+        await mass.stop()
     # remove the db file to allow users make a clean start
     # backup the db file just in case of user error
     db_file = hass.config.path("music_assistant.db")
