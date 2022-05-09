@@ -87,5 +87,39 @@ In the HACS panel, go to integrations and click the big orange '+' button. Searc
 ## Music provider specific notes
 
 - When using Spotify as music source please note that **only Spotify Premium accounts** are supported, free accounts will not work.
-- Tune-In Radio will only show your favourited items in the library.
-- When using the file system provider, make sure that your audio files contain proper ID3 tag information.
+- For Tune-In radio, make sure to fill in your user name and not your emailadress.
+- When using the file system provider, make sure that your audio files contain proper ID3 tag information and that the location can be reached from Home Assistant, for example /media/music. There is not (yet) support for remote file locations such as SMB, cloud drives etc.
+
+## Supported Media players
+
+In theory every Home Assistant media player that accepts "play from url" should be supported.
+In reality this is a bit more difficult because not every media player integration has implemented the play_media service the same way.
+In some cases it just works out of the box and in some cases it will need a few workarounds in our code to get it going. Media players that do not support 'play by url' will not/never work. See the below table for confirmed working media player integrations. Please report if you find a player not on the list and either work with us to get it compatible or report that you've tested it and it works ;-)
+
+### Confirmed working
+
+- Google Cast players
+- Kodi
+- Slimproto Squeezebox players
+- Sonos
+
+### Confirmed NOT working
+
+- Alexa / Amazon Echo devices, see here: https://github.com/music-assistant/hass-music-assistant/issues/101
+
+### Work in Progress / Working with notes
+
+- Apple TV / Homepod, but not 3rd party Airplay devices as it seems.
+
+### I need help, I have feedback
+
+- Use the issue tracker on Github to create bug reports, please include detailed info and logfiles. Please check if your issue has already been reported.
+- Use the issue tracker for feature requests. Use the like button to give your vote to an existing request or create a new one.
+- I've setup a discord server too: https://discord.gg/kaVm8hGpne
+- Current state of this integration is BETA, I have a few small features left (for example the search) before I consider the "MVP" done and then an announcement is made on the forums (and that can be used for discussions too).
+
+Thanks for testing and I hope you like my little pet project I've been working on for the last 3 years.
+
+Kind regards,
+
+Marcel
