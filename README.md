@@ -117,6 +117,15 @@ In some cases it just works out of the box and in some cases it will need a few 
 - I've setup a discord server too: https://discord.gg/kaVm8hGpne
 - Current state of this integration is BETA, I have a few small features left (for example the search) before I consider the "MVP" done and then an announcement is made on the forums (and that can be used for discussions too).
 
+## Standalone version of the panel/web app
+
+Bonus feature ;-)
+Music Assistant can be fully controlled with Home Assistant including control from automations and script and it is integrated into the `Media` panel to easily browse your favorite media. Besides that Music Assistant has a more advanced own panel too with extended features. This panel is available in the Home Assistant sidepanel menu. It is also possible to run this 'Progressive Web App' stand-alone, you can even install it on most modern platforms.
+
+The standalone version of the Music Assistant panel can be retrieved if you navigate to http(s)://<yourhomeassistanturl>/lib/mass.
+So for example with the default local url: http://homeassistant.local:8123/lib/mass
+
+
 Thanks for testing and I hope you like my little pet project I've been working on for the last 3 years.
 
 Kind regards,
