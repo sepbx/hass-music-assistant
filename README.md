@@ -83,6 +83,7 @@ In the HACS panel, go to integrations and click the big orange '+' button. Searc
 - Music sources are synced at integration (re)load and every 3 hours.
 - If a song is available on multiple providers (e.g. Spotify and a flac file on disk), the file/stream with the highest quality is always preferred when starting a stream.
 - While Music Assistant is built entirely in python, it requires the SoX and/or ffmpeg binaries to be present on your OS distribution for the audio processing. If will default to SoX if present but fallback to ffmpeg (which is installed by default on Home Assistant installations).
+- Music Assistant uses a custom stream port (TCP 8095 by default) to stream audio to players. Players must be able to reach the Home Assistant instance and this port. If you're running one of the recommended Home Assistant setups, this is all handled for you, otherwise you will have to make sure you're running HA in HOST network mode. Note: If the default port 8095 is occupied, the next port will be tried, and so on.
 
 ## Music provider specific notes
 
@@ -98,21 +99,18 @@ In some cases it just works out of the box and in some cases it will need a few 
 
 ### Confirmed working
 
-- Google Cast players
-- Kodi
-- Slimproto Squeezebox players
-- Sonos
-- Linkplay (via [custom component](https://github.com/nagyrobi/home-assistant-custom-components-linkplay))
+- [Google Cast players](https://www.home-assistant.io/integrations/cast/)
+- [Kodi](https://www.home-assistant.io/integrations/kodi/)
+- [Slimproto Squeezebox players](https://www.home-assistant.io/integrations/slimproto/)
+- [Sonos](https://www.home-assistant.io/integrations/sonos/)
+- [Linkplay](https://github.com/nagyrobi/home-assistant-custom-components-linkplay))
 
 ### Confirmed NOT working
 
 - Alexa / Amazon Echo devices, see here: https://github.com/music-assistant/hass-music-assistant/issues/101
+- Apple TV / Homepod, the HA core integration seems to have a few bugs related to this topic atm. Hopefully resolved soon.
 
-### Work in Progress / Working with notes
-
-- Apple TV / Homepod, but not 3rd party Airplay devices as it seems.
-
-### I need help, I have feedback
+## I need help, I have feedback
 
 - Use the issue tracker on Github to create bug reports, please include detailed info and logfiles. Please check if your issue has already been reported.
 - Use the issue tracker for feature requests. Use the like button to give your vote to an existing request or create a new one.
