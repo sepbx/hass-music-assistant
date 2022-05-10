@@ -103,7 +103,7 @@ In some cases it just works out of the box and in some cases it will need a few 
 - [Kodi](https://www.home-assistant.io/integrations/kodi/)
 - [Slimproto Squeezebox players](https://www.home-assistant.io/integrations/slimproto/)
 - [Sonos](https://www.home-assistant.io/integrations/sonos/)
-- [Linkplay](https://github.com/nagyrobi/home-assistant-custom-components-linkplay))
+- [Linkplay](https://github.com/nagyrobi/home-assistant-custom-components-linkplay)
 
 ### Confirmed NOT working
 
