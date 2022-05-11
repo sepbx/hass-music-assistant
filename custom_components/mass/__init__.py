@@ -11,14 +11,14 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP,
     EVENT_STATE_CHANGED,
 )
-from homeassistant.core import Event
+from homeassistant.core import Event, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.typing import HomeAssistantType
 from music_assistant import MusicAssistant
-from music_assistant.constants import EventType, MassEvent
+from music_assistant.models.enums import EventType
 from music_assistant.models.errors import MusicAssistantError
+from music_assistant.models.event import MassEvent
 from music_assistant.providers.filesystem import FileSystemProvider
 from music_assistant.providers.qobuz import QobuzProvider
 from music_assistant.providers.spotify import SpotifyProvider
@@ -54,7 +54,7 @@ FORWARD_EVENTS = (
 )
 
 
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up from a config entry."""
     http_session = async_get_clientsession(hass, verify_ssl=False)
     # TODO: optionally use mysql if mysql is detected ?
@@ -144,19 +144,19 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     return True
 
 
-async def _update_listener(hass: HomeAssistantType, entry: ConfigEntry) -> None:
+async def _update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Handle ConfigEntry options update."""
     await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_remove_config_entry_device(
-    hass: HomeAssistantType, config_entry: ConfigEntry, device_entry: dr.DeviceEntry
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: dr.DeviceEntry
 ) -> bool:
     """Remove a config entry from a device."""
     return True
 
 
-async def async_remove_entry(hass: HomeAssistantType, entry: ConfigEntry) -> None:
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Call when entry is about to be removed."""
     if mass := hass.data.pop(DOMAIN, None):
         await mass.stop()
@@ -204,7 +204,7 @@ async def async_intercept_play_media(
     await player.active_queue.play_media(uri)
 
 
-async def async_unload_entry(hass: HomeAssistantType, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
     unload_success = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if mass := hass.data.pop(DOMAIN, None):
