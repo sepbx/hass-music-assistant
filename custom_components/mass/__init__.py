@@ -1,22 +1,20 @@
 """Music Assistant (music-assistant.github.io) integration."""
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     EVENT_CALL_SERVICE,
-    EVENT_HOMEASSISTANT_START,
-    EVENT_HOMEASSISTANT_STARTED,
     EVENT_HOMEASSISTANT_STOP,
     EVENT_STATE_CHANGED,
 )
-from homeassistant.core import CoreState, Event, HomeAssistant
+from homeassistant.core import Event, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.start import async_at_start
 from music_assistant import MusicAssistant
 from music_assistant.models.config import MassConfig
 from music_assistant.models.enums import EventType
@@ -99,11 +97,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         """Handle an incoming event from Home Assistant."""
         if event.event_type == EVENT_HOMEASSISTANT_STOP:
             await mass.stop()
-        elif event.event_type == EVENT_HOMEASSISTANT_START:
-            await controls.async_register_player_controls()
-        elif event.event_type == EVENT_HOMEASSISTANT_STARTED:
-            await controls.async_register_player_controls()
-            await mass.music.start_sync(3)
         elif event.event_type == EVENT_CALL_SERVICE:
             await async_intercept_play_media(event, controls)
 
@@ -119,15 +112,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             {"type": event.type.value, "object_id": event.object_id, "data": data},
         )
 
-    # setup event listeners, register their unsubscribe in the unload
-    if hass.state == CoreState.running:
-        asyncio.create_task(controls.async_register_player_controls())
-        asyncio.create_task(mass.music.start_sync(3))
-    else:
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, handle_hass_event)
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, handle_hass_event)
+    async def on_start(*args, **kwargs):
+        """Start sync actions when Home Assistant is started."""
+        await controls.async_register_player_controls()
+        await mass.music.start_sync(3)
 
-    hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, handle_hass_event)
+    # setup event listeners, register their unsubscribe in the unload
+
+    entry.async_on_unload(
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, handle_hass_event)
+    )
+    entry.async_on_unload(async_at_start(hass, on_start))
     entry.async_on_unload(entry.add_update_listener(_update_listener))
     entry.async_on_unload(
         hass.bus.async_listen(EVENT_STATE_CHANGED, controls.async_hass_state_event)
