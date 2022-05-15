@@ -1,7 +1,6 @@
 """MediaPlayer platform for Music Assistant integration."""
 from __future__ import annotations
 
-from base64 import b64decode
 from typing import Any, Mapping
 
 from homeassistant.components import media_source
@@ -49,7 +48,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.dt import utcnow
 from music_assistant import MusicAssistant
-from music_assistant.helpers.images import get_image_url
 from music_assistant.models.enums import EventType
 from music_assistant.models.event import MassEvent
 from music_assistant.models.media_items import MediaType
@@ -226,8 +224,8 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
             media_item = current_item.media_item
             media_title = media_item.name
             media_content_id = current_item.uri
-            media_image_url = await get_image_url(self.mass, media_item)
             media_duration = current_item.duration
+            media_image_url = current_item.image
             if media_item.media_type == MediaType.TRACK:
                 media_artist = ", ".join([x.name for x in media_item.artists])
                 if media_item.version:
@@ -261,29 +259,24 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
         self._attr_media_image_url = media_image_url
         self._attr_media_duration = media_duration
 
+    @property
+    def media_image_remotely_accessible(self) -> bool:
+        """If the image url is remotely accessible."""
+        return self.media_image_url is None or self.media_image_url.startswith("http")
+
     async def async_get_media_image(self) -> tuple[bytes | None, str | None]:
         """Fetch media image of current playing image."""
-        if url := self._attr_media_image_url:
-            if url.startswith("data:image"):
-                # base64 encoded image
-                img_data = url.split(",")[1]
-                return b64decode(img_data), "image/png"
+        if not self.media_image_remotely_accessible:
+            img_data = await self.mass.metadata.get_thumbnail(self.media_image_url)
+            return (img_data, "image/png")
         return await super().async_get_media_image()
 
     async def async_media_play(self) -> None:
         """Send play command to device."""
-        if not self.player.active_queue.active:
-            # directly control source player if queue is not loaded/active
-            await self.player.play()
-            return
         await self.player.active_queue.play()
 
     async def async_media_pause(self) -> None:
         """Send pause command to device."""
-        if not self.player.active_queue.active:
-            # directly control source player if queue is not loaded/active
-            await self.player.pause()
-            return
         await self.player.active_queue.pause()
 
     async def async_media_stop(self) -> None:
@@ -300,7 +293,6 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
             # directly control source player if queue is not loaded/active
             await self.player.next_track()
             return
-        await self.player.active
         await self.player.active_queue.next()
 
     async def async_media_previous_track(self) -> None:
@@ -309,7 +301,6 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
             # directly control source player if queue is not loaded/active
             await self.player.previous_track()
             return
-        await self.player.active
         await self.player.active_queue.previous()
 
     async def async_set_volume_level(self, volume: float) -> None:
