@@ -50,6 +50,7 @@
   "queue_previous_items": "Reeds afgespeelde items",
   "queue_move_up": "Verplaats omhoog",
   "queue_move_down": "Verplaats omlaag",
+  "queue_delete": "Verwijder item",
   "queue_options": "Wachtrij opties",
   "read_more": "meer lezen",
   "stream_details": "Streamdetails",
@@ -59,6 +60,7 @@
   "volume_normalization_target": "{0} LUFS",
   "crossfade": "Crossfade modus",
   "crossfade_duration": "{0} seconden",
+  "crossfade_enabled": "Crossfade is ingeschakeld",
   "state": {
     "playing": "afspelen",
     "idle": "gestopt",
