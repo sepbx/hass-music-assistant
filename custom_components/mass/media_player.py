@@ -384,7 +384,7 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
 
         media_id = async_process_play_media_url(self.hass, media_id)
 
-        queue_opt = QUEUE_OPTION_MAP.get(enqueue, MediaPlayerEnqueue.PLAY)
+        queue_opt = QUEUE_OPTION_MAP.get(enqueue, QueueOption.PLAY)
         if announce is None:
             announce = "/api/tts_proxy" in media_id
 
