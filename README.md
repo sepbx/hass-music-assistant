@@ -1,8 +1,11 @@
 # Music Assistant
 
+[![discord](https://img.shields.io/discord/753947050995089438?label=Chat&link=https%3A%2F%2Fdiscord.gg%kaVm8hGpne&style=social)](https://discord.gg/kaVm8hGpne)
+[![hacs](https://img.shields.io/badge?label=HACS&link=https%3A%2F%2Fgithub.com%2Fhacs%2Fintegration&style=social)]([https://discord.gg/kaVm8hGpne](https://github.com/hacs/integration))
+
+
 Turn your Home Assistant instance into a jukebox, hassle free streaming of your favorite media to Home Assistant media players.
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
 
 ## Introduction
 
