@@ -1,6 +1,7 @@
 """Support Home Assistant media_player entities to be used as Players for Music Assistant."""
 from __future__ import annotations
 
+import logging
 from typing import Tuple
 
 from homeassistant.components.media_player import DOMAIN as MP_DOMAIN
@@ -68,6 +69,8 @@ from .const import (
     SLIMPROTO_EVENT,
     SONOS_DOMAIN,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 OFF_STATES = [STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_STANDBY]
 UNAVAILABLE_STATES = [STATE_UNAVAILABLE, STATE_UNKNOWN]
@@ -190,6 +193,7 @@ class HassPlayer(Player):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
+        LOGGER.debug("[%s] play_url: %s", self.entity_id, url)
         if self._mute_as_power and not self.powered:
             await self.power(True)
         await self.hass.services.async_call(
@@ -205,9 +209,9 @@ class HassPlayer(Player):
 
     async def on_playback_started(self) -> None:
         """Execute action(s) when playback started."""
-        if not self.active_queue.active:
+        if not self.active_queue.active or self.active_queue.queue_id != self.player_id:
             return
-        # workaround!
+        LOGGER.debug("[%s] on_playback_started", self.entity_id)
         # the below makes sure that next track button works on supported players
         # if media player supports enqueue, add same track multiple times
         if self.ent_platform in SUPPORTS_ENQUEUE:
@@ -239,6 +243,7 @@ class HassPlayer(Player):
 
     async def stop(self) -> None:
         """Send STOP command to player."""
+        LOGGER.debug("[%s] stop", self.entity_id)
         await self.hass.services.async_call(
             MP_DOMAIN,
             SERVICE_MEDIA_STOP,
@@ -248,6 +253,7 @@ class HassPlayer(Player):
 
     async def play(self) -> None:
         """Send PLAY/UNPAUSE command to player."""
+        LOGGER.debug("[%s] play", self.entity_id)
         await self.hass.services.async_call(
             MP_DOMAIN,
             SERVICE_MEDIA_PLAY,
@@ -257,6 +263,7 @@ class HassPlayer(Player):
 
     async def pause(self) -> None:
         """Send PAUSE command to player."""
+        LOGGER.debug("[%s] pause", self.entity_id)
         await self.hass.services.async_call(
             MP_DOMAIN,
             SERVICE_MEDIA_PAUSE,
@@ -266,6 +273,7 @@ class HassPlayer(Player):
 
     async def power(self, powered: bool) -> None:
         """Send POWER command to player."""
+        LOGGER.debug("[%s] power: %s", self.entity_id, powered)
         if not powered and self.active_queue.queue_id == self.player_id:
             if self.state == PlayerState.PLAYING:
                 await self.active_queue.stop()
@@ -288,6 +296,7 @@ class HassPlayer(Player):
 
     async def volume_set(self, volume_level: int) -> None:
         """Send volume level (0..100) command to player."""
+        LOGGER.debug("[%s] volume_set: %s", self.entity_id, volume_level)
         await self.hass.services.async_call(
             MP_DOMAIN,
             SERVICE_VOLUME_SET,
@@ -300,6 +309,7 @@ class HassPlayer(Player):
 
     async def next_track(self) -> None:
         """Send next_track command to player."""
+        LOGGER.debug("[%s] next_track", self.entity_id)
         await self.hass.services.async_call(
             MP_DOMAIN,
             SERVICE_MEDIA_NEXT_TRACK,
@@ -309,6 +319,7 @@ class HassPlayer(Player):
 
     async def previous_track(self) -> None:
         """Send previous_track command to player."""
+        LOGGER.debug("[%s] previous_track", self.entity_id)
         await self.hass.services.async_call(
             MP_DOMAIN,
             SERVICE_MEDIA_PREVIOUS_TRACK,
@@ -392,6 +403,7 @@ class HassGroupPlayer(PlayerGroup):
 
     async def power(self, powered: bool) -> None:
         """Send POWER command to player."""
+        LOGGER.debug("[%s] power: %s", self.entity_id, powered)
         if not powered and self.active_queue.queue_id == self.player_id:
             if self.state == PlayerState.PLAYING:
                 await self.active_queue.stop()
@@ -452,6 +464,7 @@ class HassCastGroupPlayer(PlayerGroup, HassPlayer):
 
     async def power(self, powered: bool) -> None:
         """Send POWER command to player."""
+        LOGGER.debug("[%s] power: %s", self.entity_id, powered)
         if not powered and self.active_queue.queue_id == self.player_id:
             if self.state == PlayerState.PLAYING:
                 await self.active_queue.stop()
