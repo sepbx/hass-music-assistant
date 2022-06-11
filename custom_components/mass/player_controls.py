@@ -131,7 +131,7 @@ class HassPlayer(Player):
         if not self.available:
             return False
         if self.use_mute_as_power:
-            return not self.volume_muted
+            return self._attr_powered and not self.volume_muted
         if self.support_power:
             return self.entity.state not in OFF_STATES
         return self._attr_powered
@@ -304,10 +304,10 @@ class HassPlayer(Player):
         ):
             # regular turn_off command
             await self.entity.async_turn_off()
-        else:
-            # no power support on device
-            self._attr_powered = powered
-            self.update_state()
+        # update local attribute anyway
+        # (for mute as power workaround and players without power support)
+        self._attr_powered = powered
+        self.update_state()
         # check group power: power off group when last player powers down
         if not powered:
             self.check_group_power()
@@ -487,7 +487,7 @@ class SonosPlayer(HassPlayer):
     @property
     def elapsed_time(self) -> float:
         """Return elapsed time of current playing media in seconds."""
-        # elapsed_time is read by queue controller every second while playing
+        # elapsed_time is read by the queue controller every second while playing
         # add the poll task here to make sure we have accurate info
         self.hass.create_task(self.poll_sonos())
         return super().elapsed_time
