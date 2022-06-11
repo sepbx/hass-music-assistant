@@ -156,7 +156,7 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
         self._attr_media_content_id = None
         self._attr_media_content_type = "music"
         self._attr_media_image_url = None
-        self._prev_time: 0
+        self._prev_time = 0
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
@@ -167,7 +167,7 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
         async def queue_time_updated(event: MassEvent):
             if event.object_id != self.player.active_queue.queue_id:
                 return
-            if abs(self._prev_time, event.data) > 5:
+            if abs(self._prev_time - event.data) > 5:
                 await self.async_on_update()
                 self.async_write_ha_state()
             self._prev_time = event.data
@@ -253,6 +253,7 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
         """Handle player updates."""
         self._attr_media_position = self.player.active_queue.elapsed_time
         self._attr_media_position_updated_at = utcnow()
+        self._prev_time = self.player.active_queue.elapsed_time
         # update current media item infos
         media_artist = None
         media_album_artist = None
