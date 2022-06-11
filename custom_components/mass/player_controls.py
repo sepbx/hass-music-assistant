@@ -112,7 +112,9 @@ class HassPlayer(Player):
     @property
     def name(self) -> str:
         """Return player name."""
-        return self.entity.name if self.entity else self.entity_id
+        if entity := self.entity:
+            return entity.registry_entry.name or entity.name
+        return self.entity_id
 
     @property
     def support_power(self) -> bool:
