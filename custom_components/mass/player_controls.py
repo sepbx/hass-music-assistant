@@ -11,7 +11,6 @@ from homeassistant.components.media_player import MediaPlayerEntity
 from homeassistant.components.media_player.const import DOMAIN as MEDIA_PLAYER_DOMAIN
 from homeassistant.components.media_player.const import (
     MEDIA_TYPE_MUSIC,
-    SUPPORT_PLAY_MEDIA,
     SUPPORT_TURN_OFF,
     SUPPORT_TURN_ON,
     SUPPORT_VOLUME_MUTE,
@@ -19,7 +18,6 @@ from homeassistant.components.media_player.const import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     ATTR_ENTITY_ID,
-    ATTR_SUPPORTED_FEATURES,
     EVENT_STATE_CHANGED,
     STATE_IDLE,
     STATE_OFF,
@@ -93,16 +91,17 @@ class HassPlayer(Player):
         self.entity_id = entity_id
 
         # grab a reference to the underlying entity
+        # we perform all logic directly on the entity instance and bypass the state machine
         entity_comp = hass.data.get(DATA_INSTANCES, {}).get(MP_DOMAIN)
         self.entity: MediaPlayerEntity = entity_comp.get_entity(entity_id)
 
         manufacturer = "Home Assistant"
         model = entity_id
-        if entry := self.entity.registry_entry:
+        if reg_entry := self.entity.registry_entry:
             # grab device entry
-            if entry.device_id:
+            if reg_entry.device_id:
                 dev_reg = dr.async_get(hass)
-                device = dev_reg.async_get(entry.device_id)
+                device = dev_reg.async_get(reg_entry.device_id)
                 manufacturer = device.manufacturer
                 model = device.model
         self._attr_device_info = DeviceInfo(manufacturer=manufacturer, model=model)
@@ -112,18 +111,16 @@ class HassPlayer(Player):
     @property
     def name(self) -> str:
         """Return player name."""
-        if entity := self.entity:
-            return entity.registry_entry.name or entity.name
+        if reg_entry := self.entity.registry_entry:
+            return reg_entry.name or self.entity.name
         return self.entity_id
 
     @property
     def support_power(self) -> bool:
         """Return if this player supports power commands."""
-        if entity := self.entity:
-            return bool(entity.supported_features & SUPPORT_TURN_ON) and bool(
-                entity.supported_features & SUPPORT_TURN_OFF
-            )
-        return False
+        return bool(self.entity.supported_features & SUPPORT_TURN_ON) and bool(
+            self.entity.supported_features & SUPPORT_TURN_OFF
+        )
 
     @property
     def powered(self) -> bool:
@@ -156,8 +153,6 @@ class HassPlayer(Player):
     @property
     def current_url(self) -> str:
         """Return URL that is currently loaded in the player."""
-        if not self.entity:
-            return ""
         return self.entity.media_content_id
 
     @property
@@ -178,7 +173,7 @@ class HassPlayer(Player):
             return 0
         if self.is_group:
             return get_group_volume(self)
-        if self.entity and self.entity.support_volume_set:
+        if self.entity.support_volume_set:
             return self.entity.volume_level * 100
         return 100
 
@@ -187,7 +182,7 @@ class HassPlayer(Player):
         """Return current mute mode of player."""
         if not self.available:
             return False
-        if self.entity and self.entity.support_volume_mute:
+        if self.entity.support_volume_mute:
             return self.entity.is_volume_muted
         return self._attr_volume_muted
 
@@ -248,13 +243,7 @@ class HassPlayer(Player):
     @callback
     def update_attributes(self) -> None:
         """Update attributes of this player."""
-        if not self.entity:
-            entity_comp = self.hass.data.get(DATA_INSTANCES, {}).get(MP_DOMAIN)
-            self.entity: MediaPlayerEntity = entity_comp.get_entity(self.entity_id)
-        if not self.entity:
-            self._attr_available = False
-        else:
-            self._attr_available = self.entity.available
+        self._attr_available = self.entity.available
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
@@ -290,18 +279,10 @@ class HassPlayer(Player):
                 await self.active_queue.stop()
         if self.use_mute_as_power:
             await self.volume_mute(not powered)
-        elif (
-            powered
-            and self.entity
-            and bool(self.entity.supported_features & SUPPORT_TURN_ON)
-        ):
+        elif powered and bool(self.entity.supported_features & SUPPORT_TURN_ON):
             # regular turn_on command
             await self.entity.async_turn_on()
-        elif (
-            not powered
-            and self.entity
-            and bool(self.entity.supported_features & SUPPORT_TURN_OFF)
-        ):
+        elif not powered and bool(self.entity.supported_features & SUPPORT_TURN_OFF):
             # regular turn_off command
             await self.entity.async_turn_off()
         # update local attribute anyway
@@ -315,7 +296,7 @@ class HassPlayer(Player):
     async def volume_set(self, volume_level: int) -> None:
         """Send volume level (0..100) command to player."""
         LOGGER.debug("[%s] volume_set: %s", self.entity_id, volume_level)
-        if self.entity and self.entity.support_volume_set:
+        if self.entity.support_volume_set:
             await self.entity.async_set_volume_level(volume_level / 100)
 
     async def volume_mute(self, muted: bool) -> None:
@@ -528,8 +509,6 @@ class SonosPlayer(HassPlayer):
 
     async def poll_sonos(self, force: Optional[bool] = None) -> None:
         """Call when the PlayerQueue polls the player for accurate info."""
-        if not self.entity:
-            return
 
         def poll_sonos():
             if self.entity.speaker.is_coordinator:
@@ -559,6 +538,7 @@ class HassGroupPlayer(HassPlayer):
             manufacturer="Home Assistant", model="Media Player Group"
         )
         self.update_attributes()
+        # schedule update of the attributes to make it refresh
 
     @property
     def current_url(self) -> PlayerState:
@@ -641,7 +621,8 @@ class HassGroupPlayer(HassPlayer):
         # collect the group childs, be prepared for the usecase where the user actually
         # added a mass player to a group, translate that to the underlying entity.
         group_childs = []
-        for entity_id in hass_state.attributes.get(ATTR_ENTITY_ID, []):
+        extra_attr = self.entity.extra_state_attributes or {}
+        for entity_id in extra_attr.get(ATTR_ENTITY_ID, []):
             if source_id := self._get_source_entity_id(entity_id):
                 group_childs.append(source_id)
         self._attr_group_childs = group_childs
@@ -678,15 +659,22 @@ async def async_register_player_control(
     if entity is None or entity.attributes is None:
         return
 
-    if not (entity.attributes.get(ATTR_SUPPORTED_FEATURES, 0) & SUPPORT_PLAY_MEDIA):
+    entity_comp = hass.data.get(DATA_INSTANCES, {}).get(MP_DOMAIN)
+    if not entity_comp:
+        return
+    entity: MediaPlayerEntity = entity_comp.get_entity(entity_id)
+    if not entity:
         return
 
-    ent_reg = er.async_get(hass)
+    # require some basic features, most important `play_media`
+    if not entity.support_play_media:
+        return
+    if not entity.support_play or not entity.support_pause:
+        return
+
     player = None
     # Integration specific player controls
-    entry_platform = None
-    if ent_entry := ent_reg.async_get(entity_id):
-        entry_platform = ent_entry.platform
+    entry_platform = entity.platform.platform_name
     if entry_platform == DOMAIN:
         # this is already a Music assistant player
         return
@@ -702,8 +690,7 @@ async def async_register_player_controls(
     hass: HomeAssistant, mass: MusicAssistant, entry: ConfigEntry
 ):
     """Register hass entities as player controls on Music Assistant."""
-    # allowed_entities not configured = not filter (=all)
-    allowed_entities = entry.options.get(CONF_PLAYER_ENTITIES)
+    allowed_entities = entry.options.get(CONF_PLAYER_ENTITIES, [])
 
     async def async_hass_state_event(event: Event) -> None:
         """Handle hass state-changed events to update registered PlayerControls."""
@@ -717,7 +704,7 @@ async def async_register_player_controls(
             source_player.on_hass_event(event)
             return
         # entity not (yet) registered
-        if allowed_entities is None or entity_id in allowed_entities:
+        if entity_id in allowed_entities:
             await async_register_player_control(hass, mass, entity_id)
 
     # register event listener
@@ -726,7 +713,6 @@ async def async_register_player_controls(
     )
     # register all current entities
     for entity in hass.states.async_all(MEDIA_PLAYER_DOMAIN):
-        if allowed_entities is None or entity.entity_id in allowed_entities:
-            if entity.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
-                continue
-            await async_register_player_control(hass, mass, entity.entity_id)
+        if entity.entity_id not in allowed_entities:
+            continue
+        await async_register_player_control(hass, mass, entity.entity_id)
