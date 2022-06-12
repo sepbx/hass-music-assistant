@@ -248,8 +248,8 @@ class HassPlayer(Player):
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
         LOGGER.debug("[%s] play_url: %s", self.entity_id, url)
-        if self.volume_muted:
-            await self.volume_mute(False)
+        if not self.support_power or self.use_mute_as_power:
+            await self.power(True)
         await self.entity.async_play_media(
             MEDIA_TYPE_MUSIC,
             url,
@@ -419,6 +419,8 @@ class CastPlayer(HassPlayer):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
+        if not self.support_power or self.use_mute_as_power:
+            await self.power(True)
         # pylint: disable=import-outside-toplevel,protected-access
         from homeassistant.components.cast.media_player import quick_play
 
