@@ -335,6 +335,9 @@ class HassPlayer(Player):
                     powered_childs.add(child_player.player_id)
             if len(powered_childs) == 0:
                 self.mass.create_task(group_player.power(False))
+        if self.is_group:
+            # schedule update of the attributes to make it refresh group childs
+            self.mass.loop.call_later(5, self.update_state)
 
 
 class SlimprotoPlayer(HassPlayer):
@@ -538,7 +541,6 @@ class HassGroupPlayer(HassPlayer):
             manufacturer="Home Assistant", model="Media Player Group"
         )
         self.update_attributes()
-        # schedule update of the attributes to make it refresh
 
     @property
     def current_url(self) -> PlayerState:
