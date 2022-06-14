@@ -48,6 +48,7 @@ from .const import (
     ATTR_SOURCE_ENTITY_ID,
     CONF_PLAYER_ENTITIES,
     DEFAULT_NAME,
+    DLNA_DOMAIN,
     DOMAIN,
     ESPHOME_DOMAIN,
     SLIMPROTO_DOMAIN,
@@ -248,8 +249,9 @@ class HassPlayer(Player):
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
         LOGGER.debug("[%s] play_url: %s", self.entity_id, url)
-        if not self.support_power or self.use_mute_as_power:
-            await self.power(True)
+        self._attr_powered = True
+        if self.use_mute_as_power:
+            await self.volume_mute(False)
         await self.entity.async_play_media(
             MEDIA_TYPE_MUSIC,
             url,
@@ -344,6 +346,19 @@ class SlimprotoPlayer(HassPlayer):
     """Representation of Hass player from Squeezebox Local integration."""
 
     # TODO: read max sample rate and supported codecs from player
+    _attr_supported_content_types: Tuple[ContentType] = (
+        ContentType.FLAC,
+        ContentType.MP3,
+        ContentType.WAV,
+        ContentType.PCM_S16LE,
+        ContentType.PCM_S24LE,
+    )
+    _attr_supported_sample_rates: Tuple[int] = (
+        44100,
+        48000,
+        88200,
+        96000,
+    )
 
     def __init__(self, *args, **kwargs) -> None:
         """Initialize player."""
@@ -419,8 +434,9 @@ class CastPlayer(HassPlayer):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
-        if not self.support_power or self.use_mute_as_power:
-            await self.power(True)
+        self._attr_powered = True
+        if self.use_mute_as_power:
+            await self.volume_mute(False)
         # pylint: disable=import-outside-toplevel,protected-access
         from homeassistant.components.cast.media_player import quick_play
 
@@ -491,6 +507,9 @@ class SonosPlayer(HassPlayer):
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
         self._sonos_paused = False
+        self._attr_powered = True
+        if self.use_mute_as_power:
+            await self.volume_mute(False)
 
         def _play_url():
             soco = self.entity.coordinator.soco
@@ -528,6 +547,51 @@ class SonosPlayer(HassPlayer):
         if force or (time() - self._last_info_fetch) > 30:
             await self.hass.loop.run_in_executor(None, poll_sonos)
             self._last_info_fetch = time()
+
+
+class DlnaPlayer(HassPlayer):
+    """Representation of Hass player from DLNA integration."""
+
+    _attr_supported_sample_rates: Tuple[int] = (44100, 48000)
+    _attr_supported_content_types: Tuple[ContentType] = (
+        ContentType.MP3,
+        ContentType.FLAC,
+    )
+
+    async def play_url(self, url: str) -> None:
+        """Play the specified url on the player."""
+        self._attr_powered = True
+        if self.use_mute_as_power:
+            await self.volume_mute(False)
+        # pylint: disable=protected-access
+        device = self.entity._device
+
+        didl_metadata = (
+            '<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">'
+            '<item id="1" parentID="0" restricted="1">'
+            "<dc:title>Streaming from Music Assistant</dc:title>"
+            "<dc:creator></dc:creator>"
+            "<upnp:album></upnp:album>"
+            "<upnp:channelName>Music Assistant</upnp:channelName>"
+            "<upnp:channelNr>0</upnp:channelNr>"
+            "<upnp:class>object.item.audioItem.audioBroadcast</upnp:class>"
+            f'<res protocolInfo="http-get:*:audio/flac:DLNA.ORG_OP=00;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=0d500000000000000000000000000000">{url}</res>'
+            "</item>"
+            "</DIDL-Lite>"
+        )
+        if device.can_stop:
+            await self.entity.async_media_stop()
+
+        # Queue media
+        await device.async_set_transport_uri(
+            url, "Streaming from Music Assistant", didl_metadata
+        )
+
+        if self.state == PlayerState.PLAYING:
+            return
+
+        await device.async_wait_for_can_play()
+        await self.entity.async_media_play()
 
 
 class HassGroupPlayer(HassPlayer):
@@ -604,6 +668,7 @@ class HassGroupPlayer(HassPlayer):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
+        self._attr_powered = True
         self._attr_current_url = url
         # redirect command to all child players
         await asyncio.gather(*[x.play_url(url) for x in get_child_players(self, True)])
@@ -643,6 +708,7 @@ class HassGroupPlayer(HassPlayer):
 
 PLAYER_MAPPING = {
     CAST_DOMAIN: CastPlayer,
+    DLNA_DOMAIN: DlnaPlayer,
     SLIMPROTO_DOMAIN: SlimprotoPlayer,
     ESPHOME_DOMAIN: ESPHomePlayer,
     SONOS_DOMAIN: SonosPlayer,

@@ -41,3 +41,4 @@ SLIMPROTO_EVENT = "slimproto_event"
 
 ESPHOME_DOMAIN = "esphome"
 SONOS_DOMAIN = "sonos"
+DLNA_DOMAIN = "dlna_dmr"
