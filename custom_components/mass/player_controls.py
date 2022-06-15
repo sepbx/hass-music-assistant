@@ -46,6 +46,7 @@ from music_assistant.models.player import (
 
 from .const import (
     ATTR_SOURCE_ENTITY_ID,
+    ATV_DOMAIN,
     CONF_PLAYER_ENTITIES,
     DEFAULT_NAME,
     DLNA_DOMAIN,
@@ -175,7 +176,7 @@ class HassPlayer(Player):
         if self.is_group:
             return get_group_volume(self)
         if self.entity.support_volume_set:
-            return self.entity.volume_level * 100
+            return (self.entity.volume_level or 0) * 100
         return 100
 
     @property
@@ -394,6 +395,13 @@ class ESPHomePlayer(HassPlayer):
     _attr_supported_sample_rates: Tuple[int] = (44100, 48000)
 
 
+class ATVPlayer(HassPlayer):
+    """Representation of Hass player from ATV/Airplay integration."""
+
+    _attr_supported_content_types: Tuple[ContentType] = (ContentType.MP3,)
+    _attr_supported_sample_rates: Tuple[int] = (44100, 48000)
+
+
 class CastPlayer(HassPlayer):
     """Representation of Hass player from cast integration."""
 
@@ -452,6 +460,10 @@ class CastPlayer(HassPlayer):
         )
         # enqueue second item to allow on-player control of next
         # (or shout next track from google assistant)
+        if self.active_queue.stream and self.active_queue.stream.is_alert:
+            return
+        if self.active_queue.stream and len(self.active_queue.items) < 2:
+            return
         app_data["enqueue"] = True
         await self.hass.async_add_executor_job(
             quick_play, cast, "default_media_receiver", app_data
@@ -473,7 +485,6 @@ class SonosPlayer(HassPlayer):
     @property
     def state(self) -> PlayerState:
         """Return current PlayerState of player."""
-        # pylint: disable=protected-access
         # a sonos player is always either playing or paused
         # consider idle if nothing is playing and we did not pause
         if self.entity.state == STATE_PAUSED and not self._sonos_paused:
@@ -707,6 +718,7 @@ class HassGroupPlayer(HassPlayer):
 
 
 PLAYER_MAPPING = {
+    ATV_DOMAIN: ATVPlayer,
     CAST_DOMAIN: CastPlayer,
     DLNA_DOMAIN: DlnaPlayer,
     SLIMPROTO_DOMAIN: SlimprotoPlayer,
