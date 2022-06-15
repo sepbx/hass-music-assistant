@@ -414,6 +414,7 @@ class CastPlayer(HassPlayer):
         if self._attr_device_info.model == "Google Cast Group":
             # this is a cast group
             self._attr_is_group = True
+        self.update_attributes()
 
     @callback
     def update_attributes(self) -> None:
