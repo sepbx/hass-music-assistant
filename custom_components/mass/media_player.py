@@ -415,7 +415,10 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
 
         if announce:
             announce_sound = "/api/tts_proxy" in media_id
-            await self.player.active_queue.play_alert(media_id, announce_sound)
+            announce_sound = False
+            self.hass.create_task(
+                self.player.active_queue.play_alert(media_id, announce_sound)
+            )
         else:
             await self.player.active_queue.play_media(media_id, queue_opt)
 
