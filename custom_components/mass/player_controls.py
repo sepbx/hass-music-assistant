@@ -130,7 +130,7 @@ class HassPlayer(Player):
         if not self.available:
             return False
         if self.use_mute_as_power:
-            return self._attr_powered and not self.volume_muted
+            return not self.volume_muted
         if self.support_power:
             return self.entity.state not in OFF_STATES
         return self._attr_powered
