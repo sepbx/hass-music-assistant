@@ -465,9 +465,13 @@ class CastPlayer(HassPlayer):
             return
         if self.active_queue.stream and len(self.active_queue.items) < 2:
             return
-        app_data["enqueue"] = True
+        enqueue_data = {**app_data}
+        enqueue_data["enqueue"] = True
+        enqueue_data["url"] = self.mass.streams.get_control_url(
+            self.active_queue.queue_id
+        )
         await self.hass.async_add_executor_job(
-            quick_play, cast, "default_media_receiver", app_data
+            quick_play, cast, "default_media_receiver", enqueue_data
         )
 
 
