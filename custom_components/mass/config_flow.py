@@ -172,6 +172,10 @@ def get_music_schema(cur_conf: dict):
 def validate_config(user_input: dict) -> dict:
     """Validate config and return dict with any errors."""
     errors = {}
+    # clear music dir if its disabled
+    music_enabled = user_input.get(CONF_FILE_ENABLED)
+    if not music_enabled:
+        user_input[CONF_FILE_DIRECTORY] = None
     # check if music directory is valid
     music_dir = user_input.get(CONF_FILE_DIRECTORY)
     if music_dir and not os.path.isdir(music_dir):
