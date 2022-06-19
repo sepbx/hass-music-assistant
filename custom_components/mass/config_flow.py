@@ -175,7 +175,7 @@ def validate_config(user_input: dict) -> dict:
     # clear music dir if its disabled
     music_enabled = user_input.get(CONF_FILE_ENABLED)
     if not music_enabled:
-        user_input[CONF_FILE_DIRECTORY] = None
+        user_input[CONF_FILE_DIRECTORY] = ""
     # check if music directory is valid
     music_dir = user_input.get(CONF_FILE_DIRECTORY)
     if music_dir and not os.path.isdir(music_dir):
