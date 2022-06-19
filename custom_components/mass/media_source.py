@@ -32,7 +32,7 @@ from music_assistant.models.media_items import MediaItemType
 from .const import DOMAIN
 from .player_controls import async_register_player_control
 
-MEDIA_TYPE_RADIO = "radio"
+MEDIA_TYPE_RADIO = MEDIA_TYPE_MUSIC
 
 PLAYABLE_MEDIA_TYPES = [
     MEDIA_TYPE_PLAYLIST,
