@@ -1,0 +1,78 @@
+name: Report bug Music Assistant
+description: Report an issue with Music Assistant.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue form is for reporting bugs only!
+        For questions read our [FAQ section][fq] or visit our community on [Discord][cf].
+        If you have a feature or enhancement request, please enter them in our discussions section [feature request][fr] 
+ 
+        [fq]: https://github.com/music-assistant/hass-music-assistant/discussions/categories/q-a-faq
+        [cf]: https://discord.com/channels/753947050995089438/753947050995089442
+        [fr]: https://github.com/music-assistant/hass-music-assistant/discussions/categories/feature-requests-and-ideas
+  - type: input
+    id: version_MA
+    validations:
+      required: true
+    attributes:
+      label: What version of Music Assistant has the issue?
+      placeholder: ma-2022.x.y
+      description: >
+        Can be found in: HACS -> Integrations -> Music Assistant -> Information 
+        For example: ma-2022.6.2
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: The problem
+      description: |
+        Please give a clear and concise description of the issue you are experiencing here, 
+        to communicate to the maintainers. Tell us what you were trying to do and what happened.
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: How to reproduce
+      description: |
+        Describe the least amount of steps possible to reproduce your error
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: |
+        Please copy and paste any relevant log output. Use the field below.
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: |
+        If you have any additional information for us. Use the field below.
+  - type: markdown
+    attributes:
+      value: |
+        ## Environment
+  - type: input
+    id: version_HA
+    validations:
+      required: true
+    attributes:
+      label: What version of Home Assistant Core are your running
+      placeholder: core-2022.5.4
+      description: |
+        Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
+        For example: core-2022.5.4
+        [![Open your Home Assistant instance and show your Home Assistant version information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/info/)
+  - type: dropdown
+    validations:
+      required: true
+    attributes:
+      label: What type of installation are you running?
+      description: |
+        Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
+
+        [![Open your Home Assistant instance and show your Home Assistant version information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/info/)
+      options:
+        - Home Assistant OS
+        - Home Assistant Container
+        - Home Assistant Supervised
+        - Home Assistant Core
