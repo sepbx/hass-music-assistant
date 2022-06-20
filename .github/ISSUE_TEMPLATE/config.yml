@@ -6,6 +6,6 @@ contact_links:
   - name: Music Assistant community on Discord.
     url: https://discord.com/channels/753947050995089438/753947050995089442
     about: For questions and sharing with other users.
-  - name: Music Assistant new features.
+  - name: Music Assistant new features section.
     url: https://github.com/music-assistant/hass-music-assistant/discussions/categories/feature-requests-and-ideas
     about: If you have a feature or enhancement request.
