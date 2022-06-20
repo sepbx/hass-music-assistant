@@ -17,10 +17,10 @@ body:
       required: true
     attributes:
       label: What version of Music Assistant has the issue?
-      placeholder: ma-2022.x.y
+      placeholder: 2022.x.y
       description: >
         Can be found in: HACS -> Integrations -> Music Assistant -> Information 
-        For example: ma-2022.6.2
+        For example: 2022.6.2
   - type: textarea
     validations:
       required: true
@@ -57,10 +57,10 @@ body:
       required: true
     attributes:
       label: What version of Home Assistant Core are your running
-      placeholder: core-2022.5.4
+      placeholder: 2022.5.4
       description: |
         Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
-        For example: core-2022.5.4
+        For example: 2022.5.4
         [![Open your Home Assistant instance and show your Home Assistant version information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/info/)
   - type: dropdown
     validations:
