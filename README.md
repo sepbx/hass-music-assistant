@@ -96,7 +96,7 @@ In the HACS panel, go to integrations and click the big orange '+' button. Searc
 ## Music provider specific notes
 
 - When using Spotify as music source please note that **only Spotify Premium accounts** are supported, free accounts will not work.
-- For Tune-In radio, make sure to fill in your user name and not your emailadress.
+- For Tune-In radio, make sure to fill in your user name and not your emailadress, and your library profile is set public (see account settings). Be aware that only favorits in your Tune-In library will be visible in Music Assistant.
 - When using the file system provider, make sure that your audio files contain proper ID3 tag information and that the location can be reached from Home Assistant, for example /media/music. There is not (yet) support for remote file locations such as SMB, cloud drives etc.
 
 ## Supported Media players
