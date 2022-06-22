@@ -76,3 +76,21 @@ body:
         - Home Assistant Container
         - Home Assistant Supervised
         - Home Assistant Core
+  - type: dropdown
+    validations:
+      required: true
+    attributes:
+      label: On what type of hardware are you running?
+      description: |
+        Can be found in: [Settings -> System -> Hardware](https://my.home-assistant.io/redirect/config/hardware/).
+
+        [![Open your Home Assistant instance and show your hardware information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/config/hardware/)
+      options:
+        - Raspberry Pi
+        - ODROID
+        - ASUS Tinkerboard
+        - Generic x86-64 (e.g. Intel NUC)
+        - Windows
+        - macOS
+        - Linux
+        - Alternative
