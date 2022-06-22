@@ -82,9 +82,9 @@ body:
     attributes:
       label: On what type of hardware are you running?
       description: |
-        Can be found in: [Settings -> System -> Hardware](https://my.home-assistant.io/redirect/config/hardware/).
+        Can be found in: [Settings -> System -> Hardware](https://my.home-assistant.io/redirect/hardware/).
 
-        [![Open your Home Assistant instance and show your hardware information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/config/hardware/)
+        [![Open your Home Assistant instance and show your hardware information.](https://my.home-assistant.io/badges/hardware.svg)](https://my.home-assistant.io/redirect/hardware/)
       options:
         - Raspberry Pi
         - ODROID
