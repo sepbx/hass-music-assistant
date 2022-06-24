@@ -58,26 +58,16 @@ Music Assistant consists of multiple building blocks:
 
 ---
 
-## Installation
+## Installation & initial configuration
 
-In the HACS panel, go to integrations and click the big orange '+' button. Search for 'Music Assistant' and click \'Install this repository in HACS'.
-
-### Using HACS
-
+- Make sure that you have the [Home Assistant Community Store](https://hacs.xyz/) installed.
 - In the HACS panel, go to integrations.
 - Search for `Music Assistant` and click `Download this repository with HACS`
-- Restart HA to load the integration into HA.
-
-### Manually (not recommended)
-
-- Download the [latest release](https://github.com/music-assistant/hass-music-assistant/releases) as a **zip file** and extract it into the `custom_components` folder in your HA installation.</li>
-- Restart HA to load the integration into HA.
-
-## Configuration
-
+- Restart Home Assistant.
 - Go to Configuration -> Integrations and click the big `+` button.
 - Look for Music Assistant and click to add it.
-- Follow the steps for initial configuration.
+- If Home Assistant does not show, refresh your brower (cache).
+- Follow the steps for initial configuration, like what players you want to use and music providers.
 - The Music Assistant integration is ready for use.
 - You can find the panel in the menu on the left for the rich user interface or use the default Home Assistant Media panel to quickly browse your music.
 - All configuration options can be adjusted later with the `configure` button on the integration's card.
@@ -90,13 +80,12 @@ In the HACS panel, go to integrations and click the big orange '+' button. Searc
 - Note that at the first startup it can take a while before data is available (first sync), the Music Assistant UI will notify you about tasks being in progress.
 - Music sources are synced at integration (re)load and every 3 hours.
 - If a song is available on multiple providers (e.g. Spotify and a flac file on disk), the file/stream with the highest quality is always preferred when starting a stream.
-- While Music Assistant is built entirely in python, it requires the SoX and/or ffmpeg binaries to be present on your OS distribution for the audio processing. If will default to SoX if present but fallback to ffmpeg (which is installed by default on Home Assistant installations).
 - Music Assistant uses a custom stream port (TCP 8095 by default) to stream audio to players. Players must be able to reach the Home Assistant instance and this port. If you're running one of the recommended Home Assistant installation methods, this is all handled for you, otherwise you will have to make sure you're running HA in HOST network mode. Note: If the default port 8095 is occupied, the next port will be tried, and so on.
 
 ## Music provider specific notes
 
 - When using Spotify as music source please note that **only Spotify Premium accounts** are supported, free accounts will not work.
-- For Tune-In radio, make sure to fill in your user name and not your emailadress, and your library profile is set public (see account settings). Be aware that only favorits in your Tune-In library will be visible in Music Assistant.
+- For Tune-In radio, make sure to fill in your username and not your emailadress. Be aware that only favorites in your Tune-In library will be visible in Music Assistant.
 - When using the file system provider, make sure that your audio files contain proper ID3 tag information and that the location can be reached from Home Assistant, for example /media/music. There is not (yet) support for remote file locations such as SMB, cloud drives etc.
 
 ## Supported Media players
@@ -112,21 +101,44 @@ In some cases it just works out of the box and in some cases it will need a few 
 - [Slimproto Squeezebox players](https://www.home-assistant.io/integrations/slimproto/)
 - [Sonos](https://www.home-assistant.io/integrations/sonos/)
 - [Linkplay](https://github.com/nagyrobi/home-assistant-custom-components-linkplay)
-- [Bose](https://www.home-assistant.io/integrations/soundtouch/)
+- [Bose Soundtouch](https://www.home-assistant.io/integrations/soundtouch/)
+- [All players supporting DLNA](https://www.home-assistant.io/integrations/dlna_dmr/)
 
-### Confirmed NOT working
+### Confirmed NOT working (or under investigation)
 
 - Alexa / Amazon Echo devices, see here: https://github.com/music-assistant/hass-music-assistant/issues/101
-- Apple TV / Homepod, the HA core integration seems to have a few bugs related to this topic atm. Hopefully resolved soon.
+- Apple TV / Homepod, see here: https://github.com/music-assistant/hass-music-assistant/discussions/438
 
 ## I need help, I have feedback
 
-- Use the [issue tracker](https://github.com/music-assistant/hass-music-assistant/issues) to create bug reports, please include detailed info and logfiles. Please check if your issue has already been reported.
-- Use the issue tracker for feature requests. Use the like button to give your vote to an existing request or create a new one.
-- I've setup a discord server too: https://discord.gg/kaVm8hGpne
-- Current state of this integration is BETA, I have a few small features left (for example the search) before I consider the "MVP" done and then an announcement is made on the forums (and that can be used for discussions too).
+- [issue tracker](https://github.com/music-assistant/hass-music-assistant/issues) to create bug reports, please include detailed info and logfiles. Please check if your issue has already been reported.
+- [feature requests](https://github.com/music-assistant/hass-music-assistant/discussions/categories/feature-requests-and-ideas): Give your vote to an existing request, join the discussion or add a new request.
+- [Q&A section](https://github.com/music-assistant/hass-music-assistant/discussions/categories/q-a-faq) Frequently asked questions and tutorials
+- [discord community](https://discord.gg/kaVm8hGpne) Join the community and get support!
 
-Thanks for testing and I hope you like my little pet project I've been working on for the last 3 years.
+## I want to help
+
+With a large project like this, there is always enough todo. Not only with actual writing of code but also in documentation, providing support, testing etc. Ofcourse you help me out greatly by donating me a few bucks but helping out can also be done in other ways:
+
+- If you like to help with the development, e.g. implementing a new music provider or fix a player specific quirk, please reach out to me on discord in a PM. I did not have time to write extended development docs but once you get the grasps of the structure it is relatively straigth forward. 
+- Help others out on discord or within the discussions part of Github.
+- Help out with writing documentation and HOWTO's and the FAQ's.
+- Just like [Erik](https://github.com/erkr) help out as a moderator on discord and Github with the load of incoming reports, request and questions. Thanks Erik!
+- Make sure to like this project by clicking the "star" button and share it with others!
+
+### Donations
+
+As explained above you can also show your appreciation in all kinds of ways. Besides that donations are great for me as a small fee back for all the free time I invest in this project. For buying some test hardware and streaming provider accounts and contributions to the metadata projects.
+
+- [Github Sponsors](https://github.com/music-assistant)
+- [Buy me a Coffee](https://www.buymeacoffee.com/marcelveldt)
+
+A really big thank you in advance from me and my family! 
+
+___________________________________________
+
+I hope you like my little pet project I've been working on for the last 3 years.
+I'm sure that together with the really great HA community we can grow this project into something really great. Thanks!
 
 Kind regards,
 
