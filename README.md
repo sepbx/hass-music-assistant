@@ -97,7 +97,6 @@ In some cases it just works out of the box and in some cases it will need a few 
 ### Confirmed working
 
 - [Google Cast players](https://www.home-assistant.io/integrations/cast/)
-- [Kodi](https://www.home-assistant.io/integrations/kodi/)
 - [Slimproto Squeezebox players](https://www.home-assistant.io/integrations/slimproto/)
 - [Sonos](https://www.home-assistant.io/integrations/sonos/)
 - [Linkplay](https://github.com/nagyrobi/home-assistant-custom-components-linkplay)
@@ -107,7 +106,8 @@ In some cases it just works out of the box and in some cases it will need a few 
 ### Confirmed NOT working (or under investigation)
 
 - Alexa / Amazon Echo devices, see here: https://github.com/music-assistant/hass-music-assistant/issues/101
-- Apple TV / Homepod, see here: https://github.com/music-assistant/hass-music-assistant/discussions/438
+- Apple TV / Homepod, see feature request here: https://github.com/music-assistant/hass-music-assistant/discussions/438
+- [Kodi](https://www.home-assistant.io/integrations/kodi/), issues reported, [see here](https://github.com/music-assistant/hass-music-assistant/issues/358)
 
 ## I need help, I have feedback
 
