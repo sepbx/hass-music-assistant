@@ -12,8 +12,8 @@ from homeassistant.core import Event, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.start import async_at_start
 from homeassistant.helpers.network import get_url
+from homeassistant.helpers.start import async_at_start
 from music_assistant import MusicAssistant
 from music_assistant.models.config import MassConfig, MusicProviderConfig
 from music_assistant.models.enums import EventType, ProviderType
@@ -52,15 +52,20 @@ FORWARD_EVENTS = (
     EventType.QUEUE_TIME_UPDATED,
 )
 
+
 def get_local_ip_from_internal_url(hass: HomeAssistant):
     """Get the stream ip address from the internal_url."""
     url = get_url(hass, allow_internal=True, allow_external=False)
     parsed_uri = urlparse(url)
-    
-    if parsed_uri.netloc == '':
+
+    if parsed_uri.netloc == "":
         return hass.config.api.local_ip
-    
-    return socket.gethostbyname(parsed_uri.netloc)
+
+    try:
+        return socket.gethostbyname(parsed_uri.netloc)
+    except socket.gaierror:
+        return hass.config.api.local_ip
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up from a config entry."""
