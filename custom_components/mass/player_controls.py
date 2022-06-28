@@ -221,17 +221,10 @@ class HassPlayer(Player):
         """Update attributes of this player."""
         self._attr_available = self.entity.available
         # figure out grouping support
-        is_group = False
         group_members = []
         if self.entity.group_members:
             # filter out 'None' for group_members
-            members = [x for x in self.entity.group_members if x is not None]
-            if len(members) > 1:
-                group_master = members[0]
-                if group_master == self.entity_id:
-                    is_group = True
-                    group_members = members
-        self._attr_is_group = is_group
+            group_members = [x for x in self.entity.group_members if x is not None]
         self._attr_group_members = group_members
 
     async def play_url(self, url: str) -> None:
