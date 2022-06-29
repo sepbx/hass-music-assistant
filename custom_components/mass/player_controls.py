@@ -292,11 +292,12 @@ class HassPlayer(Player):
         """Send POWER command to player."""
         self.logger.debug("power command called with value: %s", powered)
         # send stop if this player is active queue
-        if not powered and (
-            (self.is_group and len(self.get_child_players(True)) <= 1)
-            or (self.active_queue.queue_id == self.player_id)
+        if (
+            not powered
+            and self.active_queue.queue_id == self.player_id
+            and not self.is_passive
         ):
-            await self.stop()
+            await self.active_queue.stop()
         if self.use_mute_as_power:
             await self.volume_mute(not powered)
         elif powered and bool(self.entity.supported_features & SUPPORT_TURN_ON):
@@ -874,15 +875,20 @@ class HassGroupPlayer(HassPlayer):
 
     def on_child_update(self, player_id: str, changed_keys: set) -> None:
         """Call when one of the child players of a playergroup updates."""
-        # resume queue if a child player turns on while this queue is playing
         if (
             "powered" in changed_keys
             and self.active_queue.active
-            and self.state == PlayerState.PLAYING
+            and self.state in (PlayerState.PLAYING, PlayerState.PAUSED)
         ):
+
             if child_player := self.mass.players.get_player(player_id):
+                # resume queue if a child player turns on while this queue is playing
                 if child_player.powered:
                     self.mass.create_task(self.active_queue.resume())
+                # make sure that stop is called on the player
+                else:
+                    self.mass.create_task(child_player.stop())
+
         super().on_child_update(player_id, changed_keys)
 
 
