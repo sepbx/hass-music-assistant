@@ -99,6 +99,7 @@
     "spotify": "Spotify",
     "qobuz": "Qobuz",
     "file": "Filesystem",
-    "tunein": "Tune-in"
+    "tunein": "Tune-in",
+    "ytmusic": "Youtube Music"
   }
 }
