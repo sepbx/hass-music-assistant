@@ -523,7 +523,7 @@ class CastPlayer(HassPlayer):
             "media_id": url,
             "media_type": f"audio/{self.active_queue.settings.stream_type.value}",
             "enqueue": False,
-            "stream_type": "BUFFERED",
+            "stream_type": "LIVE",
             "title": f" Streaming from {DEFAULT_NAME}",
         }
         await self.hass.async_add_executor_job(
