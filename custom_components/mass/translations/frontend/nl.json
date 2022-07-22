@@ -25,7 +25,7 @@
   "artist_albums": "Albums",
   "album_tracks": "Album liedjes",
   "album_versions": "Versies",
-  "track_versions": "Versies",
+  "track_versions": "Versies en providerlinks",
   "type_to_search": "Type hier om te zoeken...",
   "add_library": "Voeg toe aan bibliotheek",
   "remove_library": "Verwijder uit bibliotheek",
@@ -68,6 +68,10 @@
   "crossfade": "Crossfade modus",
   "crossfade_duration": "{0} seconden",
   "crossfade_enabled": "Crossfade is ingeschakeld",
+  "stream_type": "Codec die gebruikt moet worden voor de audiostreaam naar de player",
+  "announce_volume_increase": "Relatieve volume verhoging bij afspelen van announcements",
+  "max_sample_rate": "Maximale sample rate die naar de speler verstuurd kan/mag worden",
+  "metadata_mode": "ICY Metadata modus",
   "state": {
     "playing": "afspelen",
     "idle": "gestopt",
@@ -94,7 +98,8 @@
     "position": "Positie",
     "track_number": "Tracknummer",
     "timestamp DESC": "Onlangs toegevoegd",
-    "duration": "Duur"
+    "duration": "Duur",
+    "provider": "Provider"
   },
   "on": "Aan",
   "off": "Uit",
@@ -105,6 +110,7 @@
   "no_content": "Geen items gevonden.",
   "no_content_filter": "Geen items gevonden voor de huidige zoek/filter instellingen.",
   "details": "Details",
+  "provider_details": "Provider details",
   "providers": {
     "spotify": "Spotify",
     "qobuz": "Qobuz",

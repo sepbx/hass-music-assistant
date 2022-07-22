@@ -15,6 +15,7 @@ from music_assistant.models.enums import (
     ContentType,
     CrossFadeMode,
     MediaType,
+    MetadataMode,
     ProviderType,
     QueueOption,
     RepeatMode,
@@ -44,6 +45,7 @@ SEARCH = "search"
 SORT = "sort"
 OFFSET = "offset"
 LIMIT = "limit"
+FORCE_PROVIDER_VERSION = "force_provider_version"
 
 ERR_NOT_LOADED = "not_loaded"
 
@@ -72,6 +74,7 @@ def async_register_websockets(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, websocket_playlist_create)
     websocket_api.async_register_command(hass, websocket_radios)
     websocket_api.async_register_command(hass, websocket_radio)
+    websocket_api.async_register_command(hass, websocket_radio_versions)
     websocket_api.async_register_command(hass, websocket_players)
     websocket_api.async_register_command(hass, websocket_playerqueues)
     websocket_api.async_register_command(hass, websocket_playerqueue_items)
@@ -275,6 +278,7 @@ async def websocket_albums(
         vol.Required(PROVIDER): vol.Coerce(ProviderType),
         vol.Optional(LAZY, default=True): bool,
         vol.Optional(REFRESH, default=False): bool,
+        vol.Optional(FORCE_PROVIDER_VERSION, default=False): bool,
     }
 )
 @websocket_api.async_response
@@ -286,16 +290,12 @@ async def websocket_album(
     mass: MusicAssistant,
 ) -> None:
     """Return album."""
-    item = await mass.music.albums.get(
-        msg[ITEM_ID], msg[PROVIDER], lazy=msg[LAZY], force_refresh=msg[REFRESH]
-    )
-    if item is None:
-        connection.send_error(
-            msg[ID],
-            ERR_NOT_FOUND,
-            f"album not found: {msg[PROVIDER]}/{msg[ITEM_ID]}",
+    if msg.get(FORCE_PROVIDER_VERSION):
+        item = await mass.music.albums.get_provider_item(msg[ITEM_ID], msg[PROVIDER])
+    else:
+        item = await mass.music.albums.get(
+            msg[ITEM_ID], msg[PROVIDER], lazy=msg[LAZY], force_refresh=msg[REFRESH]
         )
-        return
 
     connection.send_result(
         msg[ID],
@@ -424,6 +424,7 @@ async def websocket_track_versions(
         vol.Required(PROVIDER): vol.Coerce(ProviderType),
         vol.Optional(LAZY, default=True): bool,
         vol.Optional(REFRESH, default=False): bool,
+        vol.Optional(FORCE_PROVIDER_VERSION, default=False): bool,
     }
 )
 @websocket_api.async_response
@@ -435,17 +436,12 @@ async def websocket_track(
     mass: MusicAssistant,
 ) -> None:
     """Return track."""
-    item = await mass.music.tracks.get(
-        msg[ITEM_ID], msg[PROVIDER], lazy=msg[LAZY], force_refresh=msg[REFRESH]
-    )
-    if item is None:
-        connection.send_error(
-            msg[ID],
-            ERR_NOT_FOUND,
-            f"track not found: {msg[PROVIDER]}/{msg[ITEM_ID]}",
+    if msg.get(FORCE_PROVIDER_VERSION):
+        item = await mass.music.albums.get_provider_item(msg[ITEM_ID], msg[PROVIDER])
+    else:
+        item = await mass.music.tracks.get(
+            msg[ITEM_ID], msg[PROVIDER], lazy=msg[LAZY], force_refresh=msg[REFRESH]
         )
-        return
-
     connection.send_result(
         msg[ID],
         item.to_dict(),
@@ -714,6 +710,32 @@ async def websocket_radio(
     connection.send_result(
         msg[ID],
         item.to_dict(),
+    )
+
+
+@websocket_api.websocket_command(
+    {
+        vol.Required(TYPE): f"{DOMAIN}/radio/versions",
+        vol.Required(ITEM_ID): str,
+        vol.Required(PROVIDER): vol.Coerce(ProviderType),
+    }
+)
+@websocket_api.async_response
+@async_get_mass
+async def websocket_radio_versions(
+    hass: HomeAssistant,
+    connection: ActiveConnection,
+    msg: dict,
+    mass: MusicAssistant,
+) -> None:
+    """Return radio versions."""
+    result = [
+        item.to_dict()
+        for item in await mass.music.radio.versions(msg[ITEM_ID], msg[PROVIDER])
+    ]
+    await connection.send_big_result(
+        msg[ID],
+        result,
     )
 
 
@@ -1106,6 +1128,7 @@ async def websocket_playerqueue_command(
             vol.Optional("stream_type"): vol.Coerce(ContentType),
             vol.Optional("max_sample_rate"): vol.Coerce(int),
             vol.Optional("announce_volume_increase"): vol.Coerce(int),
+            vol.Optional("metadata_mode"): vol.Coerce(MetadataMode),
         },
     }
 )

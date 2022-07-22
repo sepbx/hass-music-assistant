@@ -25,7 +25,7 @@
   "artist_albums": "Albums",
   "album_tracks": "Album tracks",
   "album_versions": "Versions",
-  "track_versions": "Versions",
+  "track_versions": "Versions & linked providers",
   "type_to_search": "Type here to search...",
   "add_library": "Add to library",
   "remove_library": "Remove from library",
@@ -65,6 +65,12 @@
   "stream_type": "Codec/type to use for the audio stream to the player",
   "announce_volume_increase": "Relative volume increase for announcements",
   "max_sample_rate": "Maximum sample rate to send to the player",
+  "metadata_mode": {
+     "title": "ICY Metadata mode",
+     "disabled": "Disabled: Do not report ICY metadata support to player",
+     "default": "Send ICY metadata if player requests/supports it with default (large) chunksize",
+     "legacy": "Send ICY metadata if player requests/supports it with legacy (very small) chunksize"
+  },
   "state": {
     "playing": "playing",
     "idle": "idle",
@@ -91,7 +97,8 @@
     "position": "Position",
     "track_number": "Track number",
     "timestamp DESC": "Recently added",
-    "duration": "Duration"
+    "duration": "Duration",
+    "provider": "Provider"
   },
   "on": "On",
   "off": "Off",
@@ -102,6 +109,7 @@
   "no_content": "No items found.",
   "no_content_filter": "No items found for the current filter/search conditions.",
   "details": "Details",
+  "provider_details": "Provider details",
   "providers": {
     "spotify": "Spotify",
     "qobuz": "Qobuz",
