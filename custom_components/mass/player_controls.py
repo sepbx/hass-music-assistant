@@ -52,6 +52,7 @@ from .const import (
     SLIMPROTO_DOMAIN,
     SLIMPROTO_EVENT,
     SONOS_DOMAIN,
+    VOLUMIO_DOMAIN,
 )
 
 LOGGER = logging.getLogger(__name__)
@@ -448,9 +449,14 @@ class KodiPlayer(HassPlayer):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
+        if self.mass.streams.base_url not in url:
+            # use base implementation if 3rd party url provided...
+            await super().play_url(url)
+            return
+
+        self.logger.debug("play_url: %s", url)
         if not self.powered:
             await self.power(True)
-        self.logger.debug("play_url: %s", url)
 
         if self.state in (PlayerState.PLAYING, PlayerState.PAUSED):
             await self.stop()
@@ -508,6 +514,10 @@ class CastPlayer(HassPlayer):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
+        if self.mass.streams.base_url not in url:
+            # use base implementation if 3rd party url provided...
+            await super().play_url(url)
+            return
         self._attr_powered = True
         if self._attr_use_mute_as_power:
             await self.volume_mute(False)
@@ -519,7 +529,7 @@ class CastPlayer(HassPlayer):
             "media_id": url,
             "media_type": f"audio/{self.active_queue.settings.stream_type.value}",
             "enqueue": False,
-            "stream_type": "LIVE",
+            "stream_type": "BUFFERED",
             "title": f" Streaming from {DEFAULT_NAME}",
         }
         await self.hass.async_add_executor_job(
@@ -632,6 +642,11 @@ class SonosPlayer(HassPlayer):
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
         self._sonos_paused = False
+        if self.mass.streams.base_url not in url:
+            # use base implementation if 3rd party url provided...
+            await super().play_url(url)
+            return
+
         self._attr_powered = True
         if self._attr_use_mute_as_power:
             await self.volume_mute(False)
@@ -683,6 +698,11 @@ class DlnaPlayer(HassPlayer):
 
     async def play_url(self, url: str) -> None:
         """Play the specified url on the player."""
+        if self.mass.streams.base_url not in url:
+            # use base implementation if 3rd party url provided...
+            await super().play_url(url)
+            return
+
         if not self.powered:
             await self.power(True)
         # pylint: disable=protected-access
@@ -729,6 +749,16 @@ class HassGroupPlayer(HassPlayer):
             manufacturer="Home Assistant", model="Media Player Group"
         )
         super().__init__(*args, **kwargs)
+
+    @property
+    def default_stream_type(self) -> ContentType:
+        """Return the default content type to use for streaming."""
+        # if any of the players supports FLAC, prefer that
+        for child_player in self.get_child_players(False, False):
+            if child_player.default_stream_type == ContentType.FLAC:
+                return ContentType.FLAC
+        # fallback to MP3
+        return ContentType.MP3
 
     @property
     def powered(self) -> bool:
@@ -899,6 +929,29 @@ class HassGroupPlayer(HassPlayer):
         super().on_child_update(player_id, changed_keys)
 
 
+class VolumioPlayer(HassPlayer):
+    """Representation of Hass player from Volumio integration."""
+
+    _attr_stream_type: ContentType = ContentType.MP3
+
+    async def play_url(self, url: str) -> None:
+        """Play the specified url on the player."""
+        # a lot of players do not power on at playback request so send power on from here
+        if not self.powered:
+            await self.power(True)
+        self.logger.debug("play_url: %s", url)
+        self._attr_current_url = url
+        await self.entity.async_play_media(
+            MEDIA_TYPE_MUSIC,
+            {
+                "service": "webradio",
+                "type": "webradio",
+                "title": DEFAULT_NAME,
+                "uri": url,
+            },
+        )
+
+
 PLAYER_MAPPING = {
     CAST_DOMAIN: CastPlayer,
     DLNA_DOMAIN: DlnaPlayer,
@@ -907,6 +960,7 @@ PLAYER_MAPPING = {
     SONOS_DOMAIN: SonosPlayer,
     GROUP_DOMAIN: HassGroupPlayer,
     KODI_DOMAIN: KodiPlayer,
+    VOLUMIO_DOMAIN: VolumioPlayer,
 }
 
 
