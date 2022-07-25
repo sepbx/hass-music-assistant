@@ -512,42 +512,42 @@ class CastPlayer(HassPlayer):
         self._attr_is_group = is_group = len(group_members) > 0
         self._attr_use_mute_as_power = not is_group
 
-    async def play_url(self, url: str) -> None:
-        """Play the specified url on the player."""
-        if self.mass.streams.base_url not in url:
-            # use base implementation if 3rd party url provided...
-            await super().play_url(url)
-            return
-        self._attr_powered = True
-        if self._attr_use_mute_as_power:
-            await self.volume_mute(False)
-        # pylint: disable=import-outside-toplevel,protected-access
-        from homeassistant.components.cast.media_player import quick_play
+    # async def play_url(self, url: str) -> None:
+    #     """Play the specified url on the player."""
+    #     if self.mass.streams.base_url not in url:
+    #         # use base implementation if 3rd party url provided...
+    #         await super().play_url(url)
+    #         return
+    #     self._attr_powered = True
+    #     if self._attr_use_mute_as_power:
+    #         await self.volume_mute(False)
+    #     # pylint: disable=import-outside-toplevel,protected-access
+    #     from homeassistant.components.cast.media_player import quick_play
 
-        cast = self.entity._chromecast
-        app_data = {
-            "media_id": url,
-            "media_type": f"audio/{self.active_queue.settings.stream_type.value}",
-            "enqueue": False,
-            "stream_type": "BUFFERED",
-            "title": f" Streaming from {DEFAULT_NAME}",
-        }
-        await self.hass.async_add_executor_job(
-            quick_play, cast, "default_media_receiver", app_data
-        )
-        # enqueue second item to allow on-player control of next
-        # (or shout next track from google assistant)
-        await asyncio.sleep(1)
-        if self.active_queue.stream and len(self.active_queue.items) < 2:
-            return
-        enqueue_data = {**app_data}
-        enqueue_data["enqueue"] = True
-        enqueue_data["media_id"] = self.mass.streams.get_control_url(
-            self.active_queue.queue_id
-        )
-        await self.hass.async_add_executor_job(
-            quick_play, cast, "default_media_receiver", enqueue_data
-        )
+    #     cast = self.entity._chromecast
+    #     app_data = {
+    #         "media_id": url,
+    #         "media_type": f"audio/{self.active_queue.settings.stream_type.value}",
+    #         "enqueue": False,
+    #         "stream_type": "BUFFERED",
+    #         "title": f" Streaming from {DEFAULT_NAME}",
+    #     }
+    #     await self.hass.async_add_executor_job(
+    #         quick_play, cast, "default_media_receiver", app_data
+    #     )
+    #     # enqueue second item to allow on-player control of next
+    #     # (or shout next track from google assistant)
+    #     await asyncio.sleep(1)
+    #     if self.active_queue.stream and len(self.active_queue.items) < 2:
+    #         return
+    #     enqueue_data = {**app_data}
+    #     enqueue_data["enqueue"] = True
+    #     enqueue_data["media_id"] = self.mass.streams.get_control_url(
+    #         self.active_queue.queue_id
+    #     )
+    #     await self.hass.async_add_executor_job(
+    #         quick_play, cast, "default_media_receiver", enqueue_data
+    #     )
 
     async def volume_set(self, volume_level: int) -> None:
         """Send volume level (0..100) command to player."""
@@ -657,10 +657,10 @@ class SonosPlayer(HassPlayer):
             meta = (
                 '<DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/" xmlns:dlna="urn:schemas-dlna-org:metadata-1-0/">'
                 '<item id="1" parentID="0" restricted="1">'
-                "<dc:title>Streaming from Music Assistant</dc:title>"
+                f"<dc:title>Streaming from {DEFAULT_NAME}</dc:title>"
                 "<dc:creator></dc:creator>"
                 "<upnp:album></upnp:album>"
-                "<upnp:channelName>Music Assistant</upnp:channelName>"
+                f"<upnp:channelName>{DEFAULT_NAME}</upnp:channelName>"
                 "<upnp:channelNr>0</upnp:channelNr>"
                 "<upnp:class>object.item.audioItem.audioBroadcast</upnp:class>"
                 f'<res protocolInfo="http-get:*:audio/{ext}:DLNA.ORG_OP=00;DLNA.ORG_CI=0;DLNA.ORG_FLAGS=0d500000000000000000000000000000">{url}</res>'
