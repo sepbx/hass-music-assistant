@@ -196,6 +196,9 @@ class HassPlayer(Player):
     @callback
     def on_hass_event(self, event: Event) -> None:
         """Call on Home Assistant event."""
+        if not self.available:
+            entity_comp = self.hass.data.get(DATA_INSTANCES, {}).get(MP_DOMAIN)
+            self.entity: MediaPlayerEntity = entity_comp.get_entity(self.entity_id)
         if event.event_type == "state_changed":
             old_state = event.data.get("old_state")
             new_state = event.data.get("new_state")
@@ -235,6 +238,10 @@ class HassPlayer(Player):
     @callback
     def on_update(self) -> None:
         """Update attributes of this player."""
+        if not self.entity:
+            # edge case: entity is being removed/re-added to HA
+            self._attr_available = False
+            return
         self._attr_available = self.entity.available
         # figure out grouping support
         group_members = []
