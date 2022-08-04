@@ -104,8 +104,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # compare version in manifest with HA version
     manifest = await read_manifest()
     ha_vers = AwesomeVersion(HA_VERSION, AwesomeVersionStrategy.SEMVER, True)
+    vers_parts = manifest["version"].split(".")
     req_ha_vers = AwesomeVersion(
-        manifest["ha_version"], AwesomeVersionStrategy.SEMVER, True
+        f"{vers_parts[0]}.{vers_parts[1]}.0", AwesomeVersionStrategy.SEMVER, True
     )
     # for now, just raise at mismatch of major/minor because in 99% of the cases
     # there are breaking changes between HA releases
