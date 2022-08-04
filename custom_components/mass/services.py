@@ -21,47 +21,22 @@ CMD_PREVIOUS = "previous"
 CMD_STOP = "stop"
 CMD_CLEAR = "clear"
 CMD_PLAY_MEDIA = "play_media"
-CMD_SHUFFLE = "shuffle"
+CMD_SHUFFLE_ON = "shuffle_on"
+CMD_SHUFFLE_OFF = "shuffle_off"
 CMD_REPEAT = "repeat"
 CMD_SNAPSHOT_CREATE = "snapshot_create"
 CMD_SNAPSHOT_RESTORE = "snapshot_restore"
 CMD_PLAY_ANNOUNCEMENT = "play_announcement"
 
 
-CMD_MODES_MAP = {
-    CMD_REPEAT: {
-        "repeat_mode_one": RepeatMode.ONE,
-        "repeat_mode_all": RepeatMode.ALL,
-        "repeat_mode_off": RepeatMode.OFF,
-    },
-    CMD_SHUFFLE: {
-        "shuffle_mode_on": True,
-        "shuffle_mode_off": False,
-    },
-    CMD_PLAY_MEDIA: {
-        "play_media_now": QueueOption.PLAY,
-        "play_media_next": QueueOption.NEXT,
-        "play_media_add": QueueOption.ADD,
-        "play_media_replace": QueueOption.REPLACE,
-        "play_media_replace_next": QueueOption.REPLACE_NEXT,
-    },
-}
-ALL_MODES = (subkey for values in CMD_MODES_MAP.values() for subkey in values)
-URI_REQUIRED = (CMD_PLAY_MEDIA, CMD_PLAY_ANNOUNCEMENT)
-
-
 def validate_command_data(data: dict) -> dict:
     """Validate command args/mode."""
     cmd = data["command"]
-    if cmd in CMD_MODES_MAP:
-        mode = data.get("mode", "")
-        valid_modes = CMD_MODES_MAP[cmd].keys()
-        valid_modes_str = ",".join(valid_modes)
-        if mode not in valid_modes:
-            raise vol.Invalid(
-                f"Invalid mode for {cmd} - must be any of {valid_modes_str}"
-            )
-    if cmd in URI_REQUIRED:
+    if cmd == CMD_REPEAT and "repeat_mode" not in data:
+        raise vol.Invalid("Missing repeat_mode")
+    if cmd == CMD_PLAY_MEDIA and "enqueue_mode" not in data:
+        raise vol.Invalid("Missing enqueue_mode")
+    if cmd in (CMD_PLAY_MEDIA, CMD_PLAY_ANNOUNCEMENT):
         if not data.get("uri"):
             raise vol.Invalid("No URI specified")
     return data
@@ -73,8 +48,9 @@ QueueCommandServiceSchema = vol.Schema(
             "entity_id": cv.entity_ids,
             "command": str,
             "uri": vol.Union(str, [str], None),
-            "mode": vol.Optional(vol.Any(*ALL_MODES)),
             "radio_mode": vol.Optional(bool),
+            "repeat_mode": vol.Optional(vol.Coerce(RepeatMode)),
+            "enqueue_mode": vol.Optional(vol.Coerce(QueueOption)),
         },
         validate_command_data,
     )
@@ -124,13 +100,15 @@ def register_services(hass: HomeAssistant, mass: MusicAssistant):
                             raise vol.Invalid(f"Invalid uri: {uri}") from err
                 await queue.play_media(
                     media_items,
-                    CMD_MODES_MAP[cmd][data["mode"]],
+                    data["enqueue_mode"],
                     radio_mode=data.get("radio_mode", False),
                 )
-            elif cmd == CMD_SHUFFLE:
-                queue.settings.shuffle_enabled = CMD_MODES_MAP[cmd][data["mode"]]
+            elif cmd == CMD_SHUFFLE_ON:
+                queue.settings.shuffle_enabled = True
+            elif cmd == CMD_SHUFFLE_OFF:
+                queue.settings.shuffle_enabled = False
             elif cmd == CMD_REPEAT:
-                queue.settings.repeat_mode = CMD_MODES_MAP[cmd][data["mode"]]
+                queue.settings.repeat_mode = [data["repeat_mode"]]
             elif cmd == CMD_SNAPSHOT_CREATE:
                 await queue.snapshot_create()
             elif cmd == CMD_SNAPSHOT_RESTORE:

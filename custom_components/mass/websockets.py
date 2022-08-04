@@ -20,7 +20,6 @@ from music_assistant.models.enums import (
     QueueOption,
     RepeatMode,
 )
-from music_assistant.models.event import MassEvent
 
 from .const import DOMAIN
 
@@ -95,7 +94,6 @@ def async_register_websockets(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, websocket_browse)
     websocket_api.async_register_command(hass, websocket_jobs)
     websocket_api.async_register_command(hass, websocket_providers)
-    websocket_api.async_register_command(hass, websocket_subscribe_events)
 
 
 def async_get_mass(orig_func: Callable) -> Callable:
@@ -1270,45 +1268,3 @@ async def websocket_providers(
         msg[ID],
         {x.id: x.to_dict() for x in mass.music.providers},
     )
-
-
-### subscribe events
-@websocket_api.websocket_command({vol.Required(TYPE): f"{DOMAIN}/subscribe"})
-@websocket_api.async_response
-@async_get_mass
-async def websocket_subscribe_events(
-    hass: HomeAssistant, connection: ActiveConnection, msg: dict, mass: MusicAssistant
-) -> None:
-    """Subscribe to Music Assistant events."""
-
-    @callback
-    def async_cleanup() -> None:
-        """Remove signal listeners."""
-        for unsub in unsubs:
-            unsub()
-
-    @callback
-    def forward_event(event: MassEvent) -> None:
-
-        if isinstance(event.data, list):
-            event_data = [x.to_dict() for x in event.data]
-        elif event.data and hasattr(event.data, "to_dict"):
-            event_data = event.data.to_dict()
-        else:
-            event_data = event.data
-
-        connection.send_message(
-            websocket_api.event_message(
-                msg[ID],
-                {
-                    "event": event.type.value,
-                    "object_id": event.object_id,
-                    "data": event_data,
-                },
-            )
-        )
-
-    msg[DATA_UNSUBSCRIBE] = unsubs = [mass.subscribe(forward_event)]
-    connection.subscriptions[msg[ID]] = async_cleanup
-
-    connection.send_result(msg[ID], None)

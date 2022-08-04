@@ -52,6 +52,8 @@
   "play_on": "Afspelen op: {0}",
   "play_now": "Nu afspelen",
   "play_next": "Speel als volgende af",
+  "play_playlist_from": "Afspeellijst vanaf hier afspelen",
+  "play_album_from": "Album vanaf hier afspelen",
   "play_radio": "Start radio",
   "add_queue": "Voeg toe aan wachtrij",
   "queue_clear": "Wachtrij leegmaken",

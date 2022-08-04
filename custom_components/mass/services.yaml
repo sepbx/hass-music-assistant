@@ -10,7 +10,7 @@ queue_command:
     
     command:
       name: Command
-      description: The command to issue on the playerqueue.
+      description: The command to issue on the player(queue).
       required: true
       advanced: false
       example: "play"
@@ -24,7 +24,8 @@ queue_command:
             - stop
             - clear
             - play_media
-            - shuffle
+            - shuffle_on
+            - shuffle_off
             - repeat
             - snapshot_create
             - snapshot_restore
@@ -39,24 +40,32 @@ queue_command:
       selector:
         text:
 
-    mode:
-      name: Optional mode/argument for command.
-      description: Additional mode/argument used together with command, such as the repeat mode or queue mode.
+    enqueue_mode:
+      name: Enqueue mode.
+      description: "Only to be used with play_media command: Select Enqueue mode."
+      required: false
+      advanced: true
+      default: "play"
+      selector:
+        select:
+          options:
+            - "play"
+            - "replace"
+            - "next"
+            - "replace_next"
+            - "add"
+
+    repeat_mode:
+      name: Repeat mode.
+      description: "Only to be used with repeat command: Select repeat mode."
       required: false
       advanced: true
       selector:
         select:
           options:
-            - "repeat_mode_one"
-            - "repeat_mode_all"
-            - "repeat_mode_off"
-            - "shuffle_mode_on"
-            - "shuffle_mode_off"
-            - "play_media_now"
-            - "play_media_next"
-            - "play_media_add"
-            - "play_media_replace"
-            - "play_media_replace_next"
+            - "one"
+            - "all"
+            - "off"
     
     radio_mode:
       name: Enable radio mode.

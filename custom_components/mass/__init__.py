@@ -21,7 +21,7 @@ from homeassistant.helpers.network import NoURLAvailableError, get_url
 from homeassistant.helpers.start import async_at_start
 from music_assistant import MusicAssistant
 from music_assistant.models.config import MassConfig, MusicProviderConfig
-from music_assistant.models.enums import EventType, ProviderType
+from music_assistant.models.enums import ProviderType
 from music_assistant.models.errors import MusicAssistantError
 from music_assistant.models.event import MassEvent
 
@@ -53,10 +53,6 @@ from .websockets import async_register_websockets
 LOGGER = logging.getLogger(__name__)
 
 PLATFORMS = ("media_player", "switch", "number", "select")
-FORWARD_EVENTS = (
-    EventType.QUEUE_ADDED,
-    EventType.QUEUE_UPDATED,
-)
 
 
 async def read_manifest() -> dict:
@@ -108,12 +104,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # compare version in manifest with HA version
     manifest = await read_manifest()
     ha_vers = AwesomeVersion(HA_VERSION, AwesomeVersionStrategy.SEMVER, True)
-    ma_vers = AwesomeVersion(manifest["version"], AwesomeVersionStrategy.SEMVER, True)
+    req_ha_vers = AwesomeVersion(
+        manifest["ha_version"], AwesomeVersionStrategy.SEMVER, True
+    )
     # for now, just raise at mismatch of major/minor because in 99% of the cases
     # there are breaking changes between HA releases
-    if not (ha_vers.major == ma_vers.major and ha_vers.minor == ma_vers.minor):
+    if ha_vers < req_ha_vers:
         raise ConfigEntryAuthFailed(
-            "Not compatible with this version of Home Assistant"
+            "This version of Music Assistant is only compatible "
+            f"with Home Assistant version {manifest['ha_version']} (or higher)."
+        )
+    if ha_vers > req_ha_vers:
+        LOGGER.warning(
+            "This version of Music Assistant is compatible "
+            "with Home Assistant version %s, "
+            "and you are running %s. You may run into compatibility issues. "
+            "Please check if there's a newer (beta) version available of Music Assistant.",
+            manifest["ha_version"],
+            HA_VERSION,
         )
 
     # databases is really chatty with logging at info level
@@ -224,7 +232,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, on_hass_stop)
     )
     entry.async_on_unload(entry.add_update_listener(_update_listener))
-    entry.async_on_unload(mass.subscribe(on_mass_event, FORWARD_EVENTS))
+    entry.async_on_unload(mass.subscribe(on_mass_event))
 
     # Websocket support and frontend (panel)
     async_register_websockets(hass)
