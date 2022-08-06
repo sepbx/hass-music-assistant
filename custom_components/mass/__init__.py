@@ -227,15 +227,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
 
     # setup event listeners, register their unsubscribe in the unload
-    entry.async_on_unload(
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, on_hass_stop)
-    )
     entry.async_on_unload(async_at_start(hass, on_hass_start))
     entry.async_on_unload(entry.add_update_listener(_update_listener))
     entry.async_on_unload(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, on_hass_stop)
     )
-    entry.async_on_unload(entry.add_update_listener(_update_listener))
     entry.async_on_unload(mass.subscribe(on_mass_event))
 
     # Websocket support and frontend (panel)
