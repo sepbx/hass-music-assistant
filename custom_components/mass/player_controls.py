@@ -577,7 +577,6 @@ class CastPlayer(HassPlayer):
         fmt = url.rsplit(".", 1)[-1]
         queuedata = {
             "type": "QUEUE_LOAD",
-            "repeatMode": "OFF",
             "shuffle": False,  # handled by our queue controller
             "queueType": "PLAYLIST",
             "startIndex": 0,
