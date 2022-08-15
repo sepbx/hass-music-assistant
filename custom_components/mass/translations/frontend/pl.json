@@ -149,7 +149,7 @@
     "linked": "Ten dostawca jest połączony z aktualnymi szczegółami przedmiotu",
     "album_artist_filter": "Przełącz filtr wykonawcy albumu"
   },
-  "create_playlist": "Utwórz nową playlistę na {0}"
+  "create_playlist": "Utwórz nową playlistę na {0}",
   "queue_radio_enabled": "Tryb radiowy aktywny",
   "queue_radio_based_on": "Kolejka jest automatycznie wypełniana utworami na podstawie {0}:"
 }
