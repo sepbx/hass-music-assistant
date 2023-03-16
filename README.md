@@ -9,6 +9,12 @@
 
 Turn your Home Assistant instance into a jukebox, hassle free streaming of your favourite media to Home Assistant media players.
 
+# ATTENTION !
+
+**Music Assistant is not compatible with Home Assistant 2023.3.x** (and above) due to an unfortunate dependency conflict. An upstream fix is not yet available. Please stay with Home Assistant 2023.2 for a while until this is resolved or live without Music Assistant for a couple of weeks. You can also join us on discord to join the beta testers of Music Assistant 2.0 which is in early stage but maybe functional enough for you.
+
+All details: https://github.com/music-assistant/hass-music-assistant/issues/1143
+
 
 ## Introduction
 
