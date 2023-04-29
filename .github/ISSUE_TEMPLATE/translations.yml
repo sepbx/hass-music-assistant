@@ -1,0 +1,23 @@
+name: Translation Request Music Assistant
+description: Contribute to Music Assistant with a translation.
+labels: ["triage", "translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue form is for contributions to translations only!
+  - type: input
+    id: new_language
+    validations:
+      required: true
+    attributes:
+      label: New language
+      placeholder: klingon
+      description: >
+        New language to contribute with
+- type: textarea
+    id: additional_remarks
+    attributes:
+      label: Additional remarks
+      description: |
+        Optional, additional remarks
