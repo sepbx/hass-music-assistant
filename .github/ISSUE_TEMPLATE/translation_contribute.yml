@@ -1,97 +1,19 @@
-name: test Report bug Music Assistant
-description: Report an issue with Music Assistant.
+name: "Translation Request Music Assistant."
+description: "Contribute to Music Assistant with a translation."
 labels: ["translation"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        This issue form is for reporting bugs only!
-        For questions read our [FAQ section][fq] or visit our community on [Discord][cf].
-        If you have a feature or enhancement request, please enter them in our discussions section [feature request][fr] 
- 
-        [fq]: https://github.com/music-assistant/hass-music-assistant/discussions/categories/q-a-faq
-        [cf]: https://discord.com/channels/753947050995089438/753947050995089442
-        [fr]: https://github.com/music-assistant/hass-music-assistant/discussions/categories/feature-requests-and-ideas
   - type: input
-    id: version_MA
+    id: new_language
     validations:
       required: true
     attributes:
-      label: What version of Music Assistant has the issue?
-      placeholder: 2022.x.y
+      label: New language
+      placeholder: klingon
       description: >
-        Can be found in: HACS -> Integrations -> Music Assistant -> Information 
-        For example: 2022.6.2
-  - type: textarea
-    validations:
-      required: true
+        New language to contribute with
+- type: textarea
+    id: additional_remarks
     attributes:
-      label: The problem
+      label: Additional remarks
       description: |
-        Please give a clear and concise description of the issue you are experiencing here, 
-        to communicate to the maintainers. Tell us what you were trying to do and what happened.
-  - type: textarea
-    validations:
-      required: true
-    attributes:
-      label: How to reproduce
-      description: |
-        Describe the least amount of steps possible to reproduce your error
-  - type: textarea
-    id: logs
-    attributes:
-      label: Relevant log output
-      description: |
-        Please copy and paste any relevant log output. Use the field below.
-  - type: textarea
-    attributes:
-      label: Additional information
-      description: |
-        If you have any additional information for us. Use the field below.
-  - type: markdown
-    attributes:
-      value: |
-        ## Environment
-  - type: input
-    id: version_HA
-    validations:
-      required: true
-    attributes:
-      label: What version of Home Assistant Core are your running
-      placeholder: 2022.5.4
-      description: |
-        Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
-        For example: 2022.5.4
-        [![Open your Home Assistant instance and show your Home Assistant version information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/info/)
-  - type: dropdown
-    validations:
-      required: true
-    attributes:
-      label: What type of installation are you running?
-      description: |
-        Can be found in: [Settings -> About](https://my.home-assistant.io/redirect/info/).
-
-        [![Open your Home Assistant instance and show your Home Assistant version information.](https://my.home-assistant.io/badges/info.svg)](https://my.home-assistant.io/redirect/info/)
-      options:
-        - Home Assistant OS
-        - Home Assistant Container
-        - Home Assistant Supervised
-        - Home Assistant Core
-  - type: dropdown
-    validations:
-      required: true
-    attributes:
-      label: On what type of hardware are you running?
-      description: |
-        Can be found in: [Settings -> System -> Hardware](https://my.home-assistant.io/redirect/hardware/).
-
-        [![Open your Home Assistant instance and show your hardware information.](https://my.home-assistant.io/badges/hardware.svg)](https://my.home-assistant.io/redirect/hardware/)
-      options:
-        - Raspberry Pi
-        - ODROID
-        - ASUS Tinkerboard
-        - Generic x86-64 (e.g. Intel NUC)
-        - Windows
-        - macOS
-        - Linux
-        - Alternative
+        Optional, additional remarks
