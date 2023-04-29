@@ -11,3 +11,11 @@ body:
       placeholder: klingon
       description: >
         New language to contribute with
+  - type: textarea
+    id: additional_remarks
+    validations:
+      required: false    
+    attributes:
+      label: Additional remarks
+      description: |
+        Optional
