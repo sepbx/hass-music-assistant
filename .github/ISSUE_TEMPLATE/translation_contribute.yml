@@ -1,6 +1,6 @@
 name: test Report bug Music Assistant
 description: Report an issue with Music Assistant.
-labels: ["triage"]
+labels: ["translation"]
 body:
   - type: markdown
     attributes:
