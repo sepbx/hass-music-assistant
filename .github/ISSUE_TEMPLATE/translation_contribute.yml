@@ -1,4 +1,4 @@
-name: Report bug Music Assistant
+name: test Report bug Music Assistant
 description: Report an issue with Music Assistant.
 labels: ["triage"]
 body:
