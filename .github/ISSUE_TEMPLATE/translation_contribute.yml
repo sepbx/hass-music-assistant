@@ -1,5 +1,5 @@
 name: "Translation Request Music Assistant."
-description: "Contribute to Music Assistant with a translation."
+about: "Contribute to Music Assistant with a translation."
 labels: ["translation"]
 body:
   - type: markdown
