@@ -1,6 +1,6 @@
-name: Translation Request Music Assistant
-description: Contribute to Music Assistant with a translation.
-labels: ["triage, translation"]
+name: "Translation Request Music Assistant."
+description: "Contribute to Music Assistant with a translation."
+labels: ["triage", "translation"]
 body:
   - type: markdown
     attributes:
@@ -15,9 +15,11 @@ body:
       placeholder: klingon
       description: >
         New language to contribute with
-- type: textarea
+  - type: textarea
     id: additional_remarks
+    validations:
+      required: false    
     attributes:
       label: Additional remarks
       description: |
-        Optional, additional remarks
+        Optional
