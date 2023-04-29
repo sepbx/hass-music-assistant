@@ -6,9 +6,9 @@ body:
     attributes:
       value: |
         This issue form is for contributions to translations only!
-        More information on the process can be found on discord [see here][lc] 
+        More information on the process can be found in the discussions [see here][lc] 
  
-        [lc]: https://discord.com/channels/753947050995089438/1097983474578751641/1100068345384030251
+        [lc]: https://github.com/orgs/music-assistant/discussions/1216
 
   - type: input
     id: new_language
