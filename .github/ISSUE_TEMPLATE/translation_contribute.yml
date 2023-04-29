@@ -1,7 +1,11 @@
 name: "Translation Request Music Assistant."
 description: "Contribute to Music Assistant with a translation."
-labels: ["translation"]
+labels: ["triage" "translation"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        This issue form is for contributions to translations only!
   - type: input
     id: new_language
     validations:
