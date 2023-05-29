@@ -83,9 +83,11 @@ If you are running Home Assistant OS or Home Assistant supervisor, you can skip 
 - In this first implementation there's only support for "Library items", so your favourited artists, albums and playlists. In a later release we'll provide options to browse the recommendations of the various streaming providers.
 - Items on disk are not favourited by default. You can see all items if you deselect the "in library" filter (the heart) and decide for yourself what you want in your favourites.
 - Note that at the first startup it can take a while before data is available (first sync), the Music Assistant UI will notify you about tasks that are in progress.
-- Music sources are synced at integration (re)load and every 3 hours.
+- Music sources are synced at addon (re)start and every 3 hours.
 - If a song is available on multiple providers (e.g. Spotify and a flac file on disk), the file/stream with the highest quality is always preferred when starting a stream.
 - Music Assistant uses a custom stream port (TCP 8095 by default) to stream audio to players. Players must be able to reach the Home Assistant instance and this port. If you're running one of the recommended Home Assistant installation methods, this is all handled for you, otherwise you will have to make sure you're running HA in HOST network mode. Note: If the default port 8095 is occupied, the next port will be tried, and so on.
+- The HA integration will create new media_player entities for those player types which are supported natively by MA. To see the names of those players then go to SETTINGS>>DEVICES&SERVICES>>INTEGRATIONS>>MUSIC ASSISTANT. It is these players that need to be targeted in your automations.
+- See the [GitHub discussions](https://github.com/orgs/music-assistant/discussions) area for more detailed information
 
 ## I need help, I have feedback
 
