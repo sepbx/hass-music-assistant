@@ -9,9 +9,7 @@
 
 Turn your Home Assistant instance into a jukebox, hassle free streaming of your favourite media to Home Assistant media players.
 
-# ATTENTION !
-
-**Running Home Assistant 2023.3 or later?** 
+## Attention: Running Home Assistant 2023.3 or later?
 Make sure to install the BETA version of Music Assistant (2023.6.bx). Older versions of Music Assistant are not compatible with recent Home Assistant versions. We expect to end our beta stage soon.
 
 
