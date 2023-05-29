@@ -87,9 +87,6 @@ If you are running Home Assistant OS or Home Assistant supervisor, you can skip 
 - If a song is available on multiple providers (e.g. Spotify and a flac file on disk), the file/stream with the highest quality is always preferred when starting a stream.
 - Music Assistant uses a custom stream port (TCP 8095 by default) to stream audio to players. Players must be able to reach the Home Assistant instance and this port. If you're running one of the recommended Home Assistant installation methods, this is all handled for you, otherwise you will have to make sure you're running HA in HOST network mode. Note: If the default port 8095 is occupied, the next port will be tried, and so on.
 
-![image](https://user-images.githubusercontent.com/19848947/184626841-f67694f8-ca94-4a84-90d7-eb7ed5e85be6.png)
-
-
 ## I need help, I have feedback
 
 - [issue tracker](https://github.com/music-assistant/hass-music-assistant/issues) to create bug reports, please include detailed info and logfiles. Please check if your issue has already been reported.
