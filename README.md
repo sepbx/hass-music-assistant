@@ -69,6 +69,7 @@ If you are running Home Assistant OS or Home Assistant supervisor, you can skip 
 
 - Make sure that you have the [Home Assistant Community Store](https://hacs.xyz/) installed.
 - In the HACS panel, go to integrations.
+- Click `Explore & Download Repositories` (bottom right)
 - Search for `Music Assistant` and click `Download this repository with HACS`.
 - Restart Home Assistant.
 - Go to Configuration -> Integrations and click the big `+` button.
