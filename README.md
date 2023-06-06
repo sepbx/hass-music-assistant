@@ -64,6 +64,7 @@ If you are running Home Assistant OS or Home Assistant supervisor, you can skip 
 
 [See here for manual steps how to deploy the Music Assistant Server.](https://github.com/music-assistant/server)
 
+MA requires a 64bit Operating System and a minimum of 2GB of RAM on the physical device or the container (physical devices are recommended to have 4GB+ if they are running anything else)
 
 ## Installation of the Home Assistant integration
 
