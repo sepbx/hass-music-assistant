@@ -20,12 +20,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: build frontend
-        working-directory: custom_components/mass/frontend/
-        run: |
-          npm install
-          npm run build
-
       - name: Get version
         id: version
         uses: home-assistant/actions/helpers/version@master
