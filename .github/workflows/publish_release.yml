@@ -35,7 +35,7 @@ jobs:
           sed -i 's/0.0.0/${{ steps.vars.outputs.tag }}/' custom_components/mass/manifest.json
 
           cd custom_components/mass/
-          zip ../../mass.zip ./* translations/* frontend/dist/* -x '.*'
+          zip ../../mass.zip ./* translations/* -x '.*'
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
