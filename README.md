@@ -66,18 +66,21 @@ If you are running Home Assistant OS or Home Assistant supervisor, you can skip 
 
 MA requires a 64bit Operating System and a minimum of 2GB of RAM on the physical device or the container (physical devices are recommended to have 4GB+ if they are running anything else)
 
-## Installation of the Home Assistant integration
+## Installation of the Home Assistant (beta) integration
 
 - Make sure that you have the [Home Assistant Community Store](https://hacs.xyz/) installed.
-- In the HACS panel, go to integrations.
-- Click `Explore & Download Repositories` (bottom right)
-- Search for `Music Assistant` and click `Download this repository with HACS`.
+- Within HACS, search for `Music Assistant` and click the entry in the search results.
+- Click the big (blue) button at the bottom for `Download`.
+- Click the button again and in the dialog make sure `Show beta versions` is selected.
+- Download the latest (beta) version 
 - Restart Home Assistant.
 - Go to Configuration -> Integrations and click the big `+` button.
 - Look for Music Assistant and click to add it.
-- If Home Assistant does not show, refresh your browser (cache).
+- If Music Assistant does not show, refresh your browser (cache).
 - The Music Assistant integration is ready for use.
 
+NOTE: You need to set-up the players and music sources within Music Assistant itself.
+If you are running Music Assistant in docker, you need to access the webinterface at http://youripaddress:8095, when running the Home Assistant add-on, you can access the webinterface from the add-on (and even show that in the sidebar).
 
 ## Usage and notes
 
