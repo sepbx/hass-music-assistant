@@ -15,10 +15,10 @@ jobs:
       - name: Get tag
         id: vars
         run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-      - name: Set up Python 3.10
+      - name: Set up Python 3.11
         uses: actions/setup-python@v4.6.1
         with:
-          python-version: "3.10"
+          python-version: "3.11"
 
       - name: Get version
         id: version
