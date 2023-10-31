@@ -216,12 +216,13 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
             self._attr_media_position_updated_at = from_utc_timestamp(
                 queue.elapsed_time_last_updated
             )
+            self._prev_time = queue.elapsed_time
         else:
             self._attr_media_position = player.elapsed_time
             self._attr_media_position_updated_at = from_utc_timestamp(
                 player.elapsed_time_last_updated
             )
-        self._prev_time = queue.elapsed_time
+            self._prev_time = player.elapsed_time
         self._update_media_image_url(queue)
         # update current media item infos
         media_artist = None
