@@ -42,7 +42,7 @@ body:
     attributes:
       label: Relevant log output
       description: |
-        Please copy and paste any relevant log output. Use the field below.
+        Please copy and paste any relevant log output. Use the field below. Please do NOT use debug logging unless asked to do so
   - type: textarea
     attributes:
       label: Additional information
