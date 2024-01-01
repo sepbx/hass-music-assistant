@@ -10,7 +10,7 @@
 Turn your Home Assistant instance into a jukebox, hassle free streaming of your favourite media to Home Assistant media players.
 
 ## Attention: Running Home Assistant 2023.3 or later?
-Make sure to install at least the BETA version of Music Assistant (2023.6.bx). Older versions of Music Assistant are not compatible with recent Home Assistant versions. Music Assistant version [2023.12.0](https://github.com/music-assistant/hass-music-assistant/releases/tag/2023.12.0) has been released on Dec. 29 and should work on HA 2023.3 and later versions. 
+Make sure to install at least the BETA version of Music Assistant (2023.6.bx). Older versions of Music Assistant are not compatible with recent Home Assistant versions. Music Assistant version [2023.12.0](https://github.com/music-assistant/hass-music-assistant/releases/tag/2023.12.0) has been released on Dec. 29 and should work on HA 2023.3 and later versions.
 
 
 ## Introduction
@@ -86,7 +86,7 @@ If you are running Music Assistant in docker, you need to access the webinterfac
 
 During [Chapter 5 of "Year of the Voice"](https://www.youtube.com/live/djEkgoS5dDQ?si=pt8-qYH3PTpsnOq9&t=3699), [JLo](https://blog.jlpouffier.fr/chatgpt-powered-music-search-engine-on-a-local-voice-assistant/) showed something he had been working on to use the OpenAI integration along with Music Assistant. We now have this feature baked in to the integration code directly, although some extra setup is still required.
 - You need to create/add another OpenAI integration that is purely for Music Assistant.
-- Add the prompt found [here](https://github.com/jozefKruszynski/home-assistant-things/blob/main/blueprints/modified_prompt.txt) to the configuration of the the OpenAI integration.
+- Add the prompt found [here](https://github.com/music-assistant/hass-music-assistant/blob/main/prompt/prompt.txt) to the configuration of the the OpenAI integration.
 - Add a directory in your Home Assistant `config` dir name `custom_sentences/en`
 - Add the file found [here](https://github.com/music-assistant/hass-music-assistant/blob/main/custom_sentences/en/play_media_on_media_player.yaml), to that dir.
 - When setting up the Music Assistant integration, make sure that you select the correct Conversation Agent and also
