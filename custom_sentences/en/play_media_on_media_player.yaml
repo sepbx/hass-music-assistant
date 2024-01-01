@@ -3,10 +3,10 @@ intents:
   MassPlayMediaOnMediaPlayer:
     data:
       - sentences:
-          - "(play|listen to) {query} <in> [the] (<name>|[<player_devices> <in> the] <area> [<in> the <player_devices>])"
-          - "<in> [the] (<name>|[<player_devices> <in> the] <area> [<in> the <player_devices>]) (play|listen to) {query}"
+          - "(play|listen to) {query} <in> (<name>|[<player_devices> <in>] <area> [<in> <player_devices>])"
+          - "<in> (<name>|[<player_devices> <in>] <area> [<in> <player_devices>]) (play|listen to) {query}"
         expansion_rules:
-          player_devices: "(speaker[s]|[media] player[s])"
+          player_devices: "([the] speaker[s]|[the] [media] player[s])"
 lists:
   query:
     wildcard: true
