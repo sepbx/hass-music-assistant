@@ -83,7 +83,7 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
         response = intent_obj.create_response()
         response.response_type = intent.IntentResponseType.ACTION_DONE
         if area_name is not None:
-            response.async_set_speech(f"Playing selection in {area_name}")
+            response.async_set_speech(f"Playing selection in {area.normalized_name}")
         if name is not None:
             response.async_set_speech(f"Playing selection on {name}")
         return response
