@@ -10,7 +10,7 @@
 Turn your Home Assistant instance into a jukebox, hassle free streaming of your favourite media to Home Assistant media players.
 
 ## Attention: Running Home Assistant 2023.3 or later?
-Make sure to install at least the BETA version of Music Assistant (2023.6.bx). Older versions of Music Assistant are not compatible with recent Home Assistant versions. Music Assistant version [2023.12.0](https://github.com/music-assistant/hass-music-assistant/releases/tag/2023.12.0) has been released on Dec. 29 and should work on HA 2023.3 and later versions.
+Make sure to install at least the 2023.6.bx BETA version of Music Assistant HA Integration. Older versions of the Integration are not compatible with recent Home Assistant versions. Music Assistant HA Integration version [2023.12.0](https://github.com/music-assistant/hass-music-assistant/releases/tag/2023.12.0) was released on Dec. 29 and should be used in the first instance.
 
 
 ## Introduction
@@ -19,7 +19,7 @@ Music Assistant is a music library manager for your offline and online music sou
 
 Music Assistant consists of multiple building blocks:
 
-- Music Assistant Server (2.0):  the core part that runs the Music Assistant engine and keeps track of your Music sources.
+- Music Assistant Server (2.0):  the core part that runs the Music Assistant engine and keeps track of your Music sources. This will be installed automatically as an addon in HAOS when installing the Integration. Alternatively, you can manually install the addon in HAOS or install the server in a separate docker container.
 - Music Assistant integration for Home Assistant: Connects Home Assistant to your Music Assistant Server to automate your music!
 - Home Assistant Plugin for Music Assistant: Import Home Assistant media players into the Music Assistant engine to use as target for playback. (available soon).
 
@@ -28,7 +28,7 @@ Music Assistant consists of multiple building blocks:
 ### Features
 
 - Supports multiple music sources through a provider implementation.
-- All popular streaming services are supported, as well as local files.
+- Many popular streaming services are supported, as well as local files.
 - Auto matches music on different providers (track linking).
 - Fetches metadata for extended artist information.
 - Keeps track of the entire music library in a compact database
@@ -60,7 +60,7 @@ Music Assistant consists of multiple building blocks:
 ## Installation of the Music Assistant Server
 
 You need the Music Assistant Server running in your network, which is docker based so easy to deploy.
-If you are running Home Assistant OS or Home Assistant supervisor, you can skip this step as the Home Assistant integration will take care of installing the Music Assistant Server for you as add-on.
+If you are running Home Assistant OS or Home Assistant supervisor, you can skip this step as the Home Assistant integration will take care of installing the Music Assistant Server for you as an add-on.
 
 [See here for manual steps how to deploy the Music Assistant Server.](https://github.com/music-assistant/server)
 
@@ -71,8 +71,8 @@ MA requires a 64bit Operating System and a minimum of 2GB of RAM on the physical
 - Make sure that you have the [Home Assistant Community Store](https://hacs.xyz/) installed.
 - Within HACS, search for `Music Assistant` and click the entry in the search results.
 - Click the big (blue) button at the bottom for `Download`.
-- Click the button again and in the dialog make sure `Show beta versions` is selected.
-- Download the latest (beta) version
+- Click the button again and in the dialog make sure `Show beta versions` is selected if you want to use those versions.
+- Download the desired version
 - Restart Home Assistant.
 - Go to Configuration -> Integrations and click the big `+` button.
 - Look for Music Assistant and click to add it.
@@ -80,7 +80,7 @@ MA requires a 64bit Operating System and a minimum of 2GB of RAM on the physical
 - The Music Assistant integration is ready for use.
 
 NOTE: You need to set-up the players and music sources within Music Assistant itself.
-If you are running Music Assistant in docker, you need to access the webinterface at http://youripaddress:8095, when running the Home Assistant add-on, you can access the webinterface from the add-on (and even show that in the sidebar).
+If you are running Music Assistant in docker, you need to access the webinterface at http://youripaddress:8095. When running the Home Assistant add-on, you can access the webinterface from the add-on (a shortcut can be added to the sidebar) which is more secure than via the port.
 
 ## OpenAI features
 
@@ -104,7 +104,7 @@ allow the auto-exposure of Mass media players to Assist
 - If a song is available on multiple providers (e.g. Spotify and a flac file on disk), the file/stream with the highest quality is always preferred when starting a stream.
 - Music Assistant uses a custom stream port (TCP 8095 by default) to stream audio to players. Players must be able to reach the Home Assistant instance and this port. If you're running one of the recommended Home Assistant installation methods, this is all handled for you, otherwise you will have to make sure you're running HA in HOST network mode. Note: If the default port 8095 is occupied, the next port will be tried, and so on.
 - The HA integration will create new media_player entities for those player types which are supported natively by MA. To see the names of those players then go to SETTINGS>>DEVICES&SERVICES>>INTEGRATIONS>>MUSIC ASSISTANT. It is these players that need to be targeted in your automations.
-- See the [GitHub discussions](https://github.com/orgs/music-assistant/discussions) area for more detailed information
+- See the [GitHub discussion](https://github.com/orgs/music-assistant/discussions/710#discussioncomment-7987528) for more detailed information
 
 ## I need help, I have feedback
 
