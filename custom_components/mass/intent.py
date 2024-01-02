@@ -9,7 +9,7 @@ from homeassistant.components.conversation import ATTR_AGENT_ID, ATTR_TEXT
 from homeassistant.components.conversation import SERVICE_PROCESS as CONVERSATION_SERVICE
 from homeassistant.components.conversation.const import DOMAIN as CONVERSATION_DOMAIN
 from homeassistant.config_entries import ConfigEntryState
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import intent
@@ -66,30 +66,10 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
             if area is None:
                 raise intent.IntentHandleError(f"No area named {area_name}")
 
-        mass_states: set[str] = set()
-        initial_states = intent_obj.hass.states.async_all()
-        for state in initial_states:
-            if state.attributes.get("mass_player_id") is not None:
-                mass_states.add(state)
-
-        states = list(
-            intent.async_match_states(
-                intent_obj.hass,
-                name=name,
-                area=area,
-                states=mass_states,
-            )
-        )
-
-        if not states:
-            raise intent.IntentHandleError("No entities matched")
-
-        if len(states) > 1:
-            raise intent.IntentHandleError("Multiple entities matched")
-
+        state = await self._get_matched_state(intent_obj, name, area)
         actual_player = MassPlayer(
             intent_obj.hass.data[DOMAIN][config_entry.entry_id].mass,
-            states[0].attributes.get("mass_player_id"),
+            state.attributes.get("mass_player_id"),
         )
         if actual_player is None:
             raise intent.IntentHandleError(f"No Mass media player found for name {name}")
@@ -132,3 +112,29 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
             if config_entry.state == ConfigEntryState.LOADED:
                 return config_entry
         return None
+
+    async def _get_matched_state(
+        self, intent_obj: intent.Intent, name: str | None, area: ar.AreaEntry | None
+    ) -> State:
+        mass_states: set[str] = set()
+        initial_states = intent_obj.hass.states.async_all()
+        for state in initial_states:
+            if state.attributes.get("mass_player_id") is not None:
+                mass_states.add(state)
+
+        states = list(
+            intent.async_match_states(
+                intent_obj.hass,
+                name=name,
+                area=area,
+                states=mass_states,
+            )
+        )
+
+        if not states:
+            raise intent.IntentHandleError("No entities matched")
+
+        if len(states) > 1:
+            raise intent.IntentHandleError("Multiple entities matched")
+
+        return states[0]
