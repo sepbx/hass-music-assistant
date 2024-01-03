@@ -72,25 +72,20 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
             state.attributes.get("mass_player_id"),
         )
         if actual_player is None:
-            raise intent.IntentHandleError(f"No Mass media player found for name {name}")
+            raise intent.IntentHandleError(f"No entities matched for: name={name}, area={area}")
 
-        media_id, media_type = await self._get_media_id_and_media_type_from_query_result(
-            intent_obj.hass, service_data, intent_obj
+        response = await self._parse_query_and_return_appropriate_response(
+            intent_obj.hass, service_data, intent_obj, actual_player
         )
-        await actual_player.async_play_media(
-            media_id=media_id, media_type=media_type, extra={ATTR_RADIO_MODE: False}
-        )
-        response = intent_obj.create_response()
-        response.response_type = intent.IntentResponseType.ACTION_DONE
-        if area_name is not None:
-            response.async_set_speech(f"Playing selection in {area.normalized_name}")
-        if name is not None:
-            response.async_set_speech(f"Playing selection on {name}")
         return response
 
-    async def _get_media_id_and_media_type_from_query_result(
-        self, hass: HomeAssistant, service_data: dict[str, Any], intent_obj: intent.Intent
-    ) -> str:
+    async def _parse_query_and_return_appropriate_response(
+        self,
+        hass: HomeAssistant,
+        service_data: dict[str, Any],
+        intent_obj: intent.Intent,
+        actual_player: MassPlayer,
+    ) -> intent.IntentResponse:
         """Get  from the query."""
         ai_response = await hass.services.async_call(
             CONVERSATION_DOMAIN,
@@ -100,10 +95,23 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
             context=intent_obj.context,
             return_response=True,
         )
-        json_payload = json.loads(ai_response["response"]["speech"]["plain"]["speech"])
-        media_id = json_payload.get(ATTR_MEDIA_ID)
-        media_type = json_payload.get(ATTR_MEDIA_TYPE)
-        return media_id, media_type
+        response = intent_obj.create_response()
+
+        try:
+            json_payload = json.loads(ai_response["response"]["speech"]["plain"]["speech"])
+            media_id = json_payload.get(ATTR_MEDIA_ID)
+            media_type = json_payload.get(ATTR_MEDIA_TYPE)
+            await actual_player.async_play_media(
+                media_id=media_id, media_type=media_type, extra={ATTR_RADIO_MODE: False}
+            )
+            response.response_type = intent.IntentResponseType.ACTION_DONE
+            response.async_set_speech("Okay")
+        except json.decoder.JSONDecodeError:
+            clarification_response = ai_response["response"]["speech"]["plain"]["speech"]
+            response.response_type = intent.IntentResponseType.ACTION_DONE
+            response.async_set_speech(clarification_response)
+
+        return response
 
     async def _get_loaded_config_entry(self, hass: HomeAssistant) -> str:
         """Get the correct config entry."""
@@ -132,9 +140,11 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
         )
 
         if not states:
-            raise intent.IntentHandleError("No entities matched")
+            raise intent.IntentHandleError(f"No entities matched for: name={name}, area={area}")
 
         if len(states) > 1:
-            raise intent.IntentHandleError("Multiple entities matched")
+            raise intent.IntentHandleError(
+                f"Multiple entities matched for: name={name}, area={area}"
+            )
 
         return states[0]
