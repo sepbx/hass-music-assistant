@@ -108,7 +108,7 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
             response.async_set_speech("Okay")
         except json.decoder.JSONDecodeError:
             clarification_response = ai_response["response"]["speech"]["plain"]["speech"]
-            response.response_type = intent.IntentResponseType.ACTION_DONE
+            response.response_type = intent.IntentResponseType.PARTIAL_ACTION_DONE
             response.async_set_speech(clarification_response)
 
         return response
