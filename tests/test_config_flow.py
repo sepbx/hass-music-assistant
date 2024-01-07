@@ -103,7 +103,7 @@ async def test_flow_user_init_zeroconf_schema(hass):
         config_flow.DOMAIN, context={"source": "zeroconf"}, data=ZEROCONF_DATA
     )
     expected = {
-        "data_schema": config_flow.ON_SUPERVISOR_SCHEMA,
+        "data_schema": config_flow.get_zeroconf_schema(),
         "description_placeholders": None,
         "errors": None,
         "flow_id": mock.ANY,
