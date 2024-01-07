@@ -1,5 +1,6 @@
 """Define tests for the Music Assistant Integration config flow."""
 
+from copy import deepcopy
 from ipaddress import ip_address
 from unittest import mock
 from unittest.mock import patch
@@ -46,6 +47,32 @@ ZEROCONF_DATA = zeroconf.ZeroconfServiceInfo(
         "homeassistant_addon": True,
     },
 )
+
+
+async def setup_mass_integration(
+    hass,
+    *,
+    config=VALID_CONFIG,
+    options={},
+    entry_id="1",
+    unique_id="1234",
+    source="user",
+):
+    """Create the Music Assistant integration."""
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        source=source,
+        data=deepcopy(config),
+        options=deepcopy(options),
+        entry_id=entry_id,
+        unique_id=unique_id,
+    )
+    config_entry.add_to_hass(hass)
+
+    await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    return config_entry
 
 
 @pytest.fixture(autouse=True)
@@ -190,14 +217,7 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):  # noq
 
 async def test_options_flow_init(hass):
     """Test config flow options."""
-    config_entry = MockConfigEntry(
-        domain=DOMAIN,
-        unique_id="1234",
-        data=VALID_CONFIG,
-    )
-    config_entry.add_to_hass(hass)
-    assert await hass.config_entries.async_setup(config_entry.entry_id)
-    await hass.async_block_till_done()
+    config_entry = await setup_mass_integration(hass)
     # show initial form
     result = await hass.config_entries.options.async_init(config_entry.entry_id)
     assert result["type"] == "form"
@@ -207,3 +227,19 @@ async def test_options_flow_init(hass):
     assert data_schema.schema[CONF_URL] is str
     assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
+
+
+async def test_options_flow_change_conversation_agent(hass):
+    """Test config flow options."""
+    config_entry = await setup_mass_integration(hass)
+    # show initial form
+    _result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    # submit form with options
+    await hass.config_entries.options.async_configure(
+        _result["flow_id"],
+        user_input={
+            CONF_URL: "http://localhost:8095",
+            CONF_OPENAI_AGENT_ID: "hfhfhfhfhfhf",
+        },
+    )
+    assert config_entry.data.get(CONF_OPENAI_AGENT_ID) == "hfhfhfhfhfhf"
