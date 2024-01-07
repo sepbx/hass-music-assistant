@@ -78,6 +78,36 @@ async def test_flow_user_init_supervisor_schema(hass):
     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
 
 
+# @patch("homeassistant.components.zeroconf.ZeroconfServiceInfo.properties")
+# async def test_flow_user_init_zeroconf_schema(m_zeroconf_info, hass):
+#     """Test the initialization of the form in the first step of the config flow."""
+#     m_zeroconf_info.return_value = {
+#         "server_id": "1234",
+#         "base_url": "http://localhost:8095",
+#     }
+#     # breakpoint()
+#     result = await hass.config_entries.flow.async_init(
+#         config_flow.DOMAIN, context={"source": "zeroconf"}
+#     )
+#     expected = {
+#         "data_schema": config_flow.ON_SUPERVISOR_SCHEMA,
+#         "description_placeholders": None,
+#         "errors": None,
+#         "flow_id": mock.ANY,
+#         "handler": "mass",
+#         "step_id": "on_supervisor",
+#         "last_step": None,
+#         "preview": None,
+#         "type": "form",
+#     }
+#     assert result.get("step_id") == expected.get("step_id")
+#     data_schema = result.get("data_schema")
+#     assert data_schema is not None
+#     assert data_schema.schema[CONF_USE_ADDON] is bool
+#     assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
+#     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
+
+
 @patch("custom_components.mass.config_flow.get_server_info")
 async def test_flow_user_init_connect_issue(m_server_info, hass):
     """Test we advance to the next step when server url is invalid."""
