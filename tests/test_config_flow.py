@@ -21,8 +21,8 @@ DEFAULT_TITLE = "Music Assistant"
 
 VALID_CONFIG = {
     CONF_URL: "http://localhost:8095",
-    CONF_USE_ADDON: True,
-    CONF_INTEGRATION_CREATED_ADDON: True,
+    CONF_USE_ADDON: False,
+    CONF_INTEGRATION_CREATED_ADDON: False,
     CONF_OPENAI_AGENT_ID: "2be183ad64ff0d464a94bd2915140a55",
     CONF_ASSIST_AUTO_EXPOSE_PLAYERS: True,
 }
@@ -40,7 +40,7 @@ ZEROCONF_DATA = zeroconf.ZeroconfServiceInfo(
         "server_version": "0.0.0",
         "schema_version": 23,
         "min_supported_schema_version": 23,
-        "homeassistant_addon": False,
+        "homeassistant_addon": True,
     },
 )
 
@@ -146,3 +146,34 @@ async def test_flow_user_init_server_version_invalid(m_server_info, hass):
         _result["flow_id"], user_input={CONF_URL: "bad"}
     )
     assert {"base": "invalid_server_version"} == result["errors"]
+
+
+@patch("custom_components.mass.config_flow.MusicAssistantClient")
+async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):  # noqa: ARG001
+    """Test the config entry is successfully created."""
+    config_flow.ConfigFlow.data = VALID_CONFIG
+    _result = await hass.config_entries.flow.async_init(
+        config_flow.DOMAIN, context={"source": "zeroconf"}, data=ZEROCONF_DATA
+    )
+    result = await hass.config_entries.flow.async_configure(
+        _result["flow_id"],
+        user_input={
+            CONF_OPENAI_AGENT_ID: "2be183ad64ff0d464a94bd2915140a55",
+            CONF_ASSIST_AUTO_EXPOSE_PLAYERS: True,
+        },
+    )
+    # breakpoint()
+    expected = {
+        "context": {"source": "zeroconf", "unique_id": "1234"},
+        "version": 1,
+        "type": "create_entry",
+        "flow_id": mock.ANY,
+        "handler": "mass",
+        "title": DEFAULT_TITLE,
+        "data": VALID_CONFIG,
+        "description": None,
+        "description_placeholders": None,
+        "result": mock.ANY,
+        "options": {},
+    }
+    assert expected == result
