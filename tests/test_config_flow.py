@@ -4,9 +4,11 @@ from ipaddress import ip_address
 from unittest import mock
 from unittest.mock import patch
 
+import pytest
 from homeassistant.components import zeroconf
 from homeassistant.helpers.selector import ConversationAgentSelector
 from music_assistant.client.exceptions import CannotConnect, InvalidServerVersion
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.mass import config_flow
 from custom_components.mass.config_flow import (
@@ -16,6 +18,7 @@ from custom_components.mass.config_flow import (
     CONF_URL,
     CONF_USE_ADDON,
 )
+from custom_components.mass.const import DOMAIN
 
 DEFAULT_TITLE = "Music Assistant"
 
@@ -43,6 +46,13 @@ ZEROCONF_DATA = zeroconf.ZeroconfServiceInfo(
         "homeassistant_addon": True,
     },
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_setup_entry():
+    """Mock setting up a config entry."""
+    with patch("custom_components.mass.async_setup_entry", return_value=True):
+        yield
 
 
 async def test_flow_user_init_manual_schema(hass):
@@ -162,7 +172,6 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):  # noq
             CONF_ASSIST_AUTO_EXPOSE_PLAYERS: True,
         },
     )
-    # breakpoint()
     expected = {
         "context": {"source": "zeroconf", "unique_id": "1234"},
         "version": 1,
@@ -177,3 +186,24 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):  # noq
         "options": {},
     }
     assert expected == result
+
+
+async def test_options_flow_init(hass):
+    """Test config flow options."""
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="1234",
+        data=VALID_CONFIG,
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    assert result["type"] == "form"
+    assert result["step_id"] == "init"
+    data_schema = result.get("data_schema")
+    assert data_schema is not None
+    assert data_schema.schema[CONF_URL] is str
+    assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
+    assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
