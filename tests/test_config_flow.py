@@ -205,6 +205,7 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):  # noq
         "type": "create_entry",
         "flow_id": mock.ANY,
         "handler": "mass",
+        "minor_version": 1,
         "title": DEFAULT_TITLE,
         "data": VALID_CONFIG,
         "description": None,
