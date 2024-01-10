@@ -148,8 +148,6 @@ async def async_setup_entry(
 class MassPlayer(MassBaseEntity, MediaPlayerEntity):
     """Representation of MediaPlayerEntity from Music Assistant Player."""
 
-    # pylint: disable=W0223
-
     _attr_name = None
 
     def __init__(self, mass: MusicAssistantClient, player_id: str) -> None:
