@@ -76,6 +76,11 @@ async def setup_mass_integration(
 
 
 @pytest.fixture(autouse=True)
+def use_mocked_zeroconf(mock_async_zeroconf):  # noqa: ARG001
+    """Mock zeroconf in all tests."""
+
+
+@pytest.fixture(autouse=True)
 def mock_setup_entry():
     """Mock setting up a config entry."""
     with patch("custom_components.mass.async_setup_entry", return_value=True):
