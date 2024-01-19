@@ -33,7 +33,7 @@ SLOT_VALUE = "value"
 
 
 async def async_setup_intents(hass: HomeAssistant) -> None:
-    """Set up the climate intents."""
+    """Set up the Music Assistant intents."""
     intent.async_register(hass, MassPlayMediaOnMediaPlayerHandler())
 
 
@@ -54,12 +54,12 @@ class MassPlayMediaOnMediaPlayerHandler(intent.IntentHandler):
             service_data[ATTR_AGENT_ID] = config_entry.data.get(CONF_OPENAI_AGENT_ID)
             service_data[ATTR_TEXT] = query
 
-        name: str | None = slots.get("name", {}).get("value")
+        name: str | None = slots.get(NAME_SLOT, {}).get(SLOT_VALUE)
         if name == "all":
             # Don't match on name if targeting all entities
             name = None
         # Look up area first to fail early
-        area_name = slots.get("area", {}).get("value")
+        area_name = slots.get(AREA_SLOT, {}).get(SLOT_VALUE)
         area: ar.AreaEntry | None = None
         if area_name is not None:
             areas = ar.async_get(intent_obj.hass)
