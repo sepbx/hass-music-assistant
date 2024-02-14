@@ -10,7 +10,7 @@ classifiers = [
 dependencies = [
   "async_timeout==4.0.3",
   "homeassistant>=2024.1.2",
-  "music-assistant==2.0.0b83",
+  "music-assistant==2.0.0b93",
 ]
 description = "Music Assistant (BETA) Home Assistant Integration"
 license = {text = "Apache-2.0"}
@@ -48,27 +48,27 @@ zip-safe = false
 include = ["custom_components*"]
 
 [tool.mypy]
-check_untyped_defs = true 
+check_untyped_defs = true
 disallow_any_generics = false # TEMPORARY DISABLED
-disallow_incomplete_defs = true 
-disallow_subclassing_any = true 
-disallow_untyped_calls = true 
-disallow_untyped_decorators = true 
-disallow_untyped_defs = true 
-follow_imports = "normal" 
-ignore_missing_imports = true 
-no_implicit_optional = true 
-no_implicit_reexport = true 
-platform = "linux" 
-python_version = "3.11" 
-strict_optional = true 
-warn_incomplete_stub = true 
-warn_no_return = true 
-warn_redundant_casts = true 
-warn_return_any = true 
-warn_unreachable = true 
-warn_unused_configs = true 
-warn_unused_ignores = true 
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+follow_imports = "normal"
+ignore_missing_imports = true
+no_implicit_optional = true
+no_implicit_reexport = true
+platform = "linux"
+python_version = "3.11"
+strict_optional = true
+warn_incomplete_stub = true
+warn_no_return = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
 
 [tool.pylint.MAIN]
 extension-pkg-allow-list = [
