@@ -9,6 +9,7 @@ import pytest
 
 # pylint: disable=wrong-import-order
 from homeassistant.components import zeroconf
+from homeassistant.data_entry_flow import InvalidData
 from homeassistant.helpers.selector import ConversationAgentSelector
 from music_assistant.client.exceptions import CannotConnect, InvalidServerVersion
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -230,6 +231,25 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):
         "options": {},
     }
     assert expected == result
+
+
+@patch("custom_components.mass.config_flow.MusicAssistantClient")
+async def test_flow_discovery_confirm_creates_config_entry_with_none_type_conversation_agent(
+    m_mass, hass  # noqa: ARG001
+):
+    """Test the config entry is successfully created."""
+    with pytest.raises(InvalidData):
+        config_flow.ConfigFlow.data = VALID_CONFIG
+        _result = await hass.config_entries.flow.async_init(
+            config_flow.DOMAIN, context={"source": "zeroconf"}, data=ZEROCONF_DATA
+        )
+        await hass.config_entries.flow.async_configure(
+            _result["flow_id"],
+            user_input={
+                CONF_OPENAI_AGENT_ID: None,
+                CONF_ASSIST_AUTO_EXPOSE_PLAYERS: False,
+            },
+        )
 
 
 async def test_options_flow_init(hass):
