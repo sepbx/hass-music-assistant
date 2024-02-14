@@ -59,6 +59,8 @@ def register_services(hass: HomeAssistant) -> None:
                     item[key] = compact_item(value)
                 elif isinstance(value, list):
                     for subitem in value:
+                        if not isinstance(subitem, dict):
+                            continue
                         compact_item(subitem)
                     # item[key] = [compact_item(x) if isinstance(x, dict) else x for x in value]
             return item
@@ -66,6 +68,8 @@ def register_services(hass: HomeAssistant) -> None:
         dict_result: dict[str, list[dict[str, Any]]] = result.to_dict()
         for media_type_key in dict_result:
             for item in dict_result[media_type_key]:
+                if not isinstance(item, dict):
+                    continue
                 compact_item(item)
         return dict_result
 
