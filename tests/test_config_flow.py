@@ -6,6 +6,8 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
+
+# pylint: disable=wrong-import-order
 from homeassistant.components import zeroconf
 from homeassistant.helpers.selector import ConversationAgentSelector
 from music_assistant.client.exceptions import CannotConnect, InvalidServerVersion
@@ -49,16 +51,19 @@ ZEROCONF_DATA = zeroconf.ZeroconfServiceInfo(
 )
 
 
+# pylint: disable=dangerous-default-value
 async def setup_mass_integration(
     hass,
     *,
     config=VALID_CONFIG,
-    options={},
+    options=None,
     entry_id="1",
     unique_id="1234",
     source="user",
 ):
     """Create the Music Assistant integration."""
+    if options is None:
+        options = {}
     config_entry = MockConfigEntry(
         domain=DOMAIN,
         source=source,
@@ -76,7 +81,7 @@ async def setup_mass_integration(
 
 
 @pytest.fixture(autouse=True)
-def use_mocked_zeroconf(mock_async_zeroconf):  # noqa: ARG001
+def use_mocked_zeroconf(mock_async_zeroconf):
     """Mock zeroconf in all tests."""
 
 
@@ -110,7 +115,9 @@ async def test_flow_user_init_manual_schema(hass):
     data_schema = result.get("data_schema")
     assert data_schema is not None
     assert data_schema.schema[CONF_URL] is str
-    assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
+    assert isinstance(
+        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
+    )
     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
 
 
@@ -135,7 +142,9 @@ async def test_flow_user_init_supervisor_schema(hass):
     data_schema = result.get("data_schema")
     assert data_schema is not None
     assert data_schema.schema[CONF_USE_ADDON] is bool
-    assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
+    assert isinstance(
+        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
+    )
     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
 
 
@@ -158,7 +167,9 @@ async def test_flow_user_init_zeroconf_schema(hass):
     assert result.get("step_id") == expected.get("step_id")
     data_schema = result.get("data_schema")
     assert data_schema is not None
-    assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
+    assert isinstance(
+        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
+    )
     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
 
 
@@ -191,7 +202,7 @@ async def test_flow_user_init_server_version_invalid(m_server_info, hass):
 
 
 @patch("custom_components.mass.config_flow.MusicAssistantClient")
-async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):  # noqa: ARG001
+async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):
     """Test the config entry is successfully created."""
     config_flow.ConfigFlow.data = VALID_CONFIG
     _result = await hass.config_entries.flow.async_init(
@@ -231,7 +242,9 @@ async def test_options_flow_init(hass):
     data_schema = result.get("data_schema")
     assert data_schema is not None
     assert data_schema.schema[CONF_URL] is str
-    assert isinstance(data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector)
+    assert isinstance(
+        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
+    )
     assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
 
 

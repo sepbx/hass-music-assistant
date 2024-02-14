@@ -22,7 +22,9 @@ class MassEntryData:
 
 
 @callback
-def get_mass(hass: HomeAssistant, entry_id: str | None = None) -> MusicAssistantClient | None:
+def get_mass(
+    hass: HomeAssistant, entry_id: str | None = None
+) -> MusicAssistantClient | None:
     """Return MusicAssistantClient instance."""
     if DOMAIN not in hass.data:
         return None
@@ -31,3 +33,4 @@ def get_mass(hass: HomeAssistant, entry_id: str | None = None) -> MusicAssistant
             continue
         mass_entry_data: MassEntryData = value
         return mass_entry_data.mass
+    return None

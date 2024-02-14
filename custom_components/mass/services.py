@@ -5,7 +5,12 @@ from typing import Any
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.core import HomeAssistant, ServiceResponse, SupportsResponse, callback
+from homeassistant.core import (
+    HomeAssistant,
+    ServiceResponse,
+    SupportsResponse,
+    callback,
+)
 from homeassistant.helpers.service import ServiceCall
 from music_assistant.common.models.enums import MediaType
 
@@ -76,7 +81,9 @@ def register_services(hass: HomeAssistant) -> None:
         schema=vol.Schema(
             {
                 vol.Required(ATTR_SEARCH_NAME): cv.string,
-                vol.Optional(ATTR_MEDIA_TYPE): vol.All(cv.ensure_list, [vol.Coerce(MediaType)]),
+                vol.Optional(ATTR_MEDIA_TYPE): vol.All(
+                    cv.ensure_list, [vol.Coerce(MediaType)]
+                ),
                 vol.Optional(ATTR_SEARCH_ARTIST): cv.string,
                 vol.Optional(ATTR_SEARCH_ALBUM): cv.string,
                 vol.Optional(ATTR_LIMIT, default=5): vol.Coerce(int),

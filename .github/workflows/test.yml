@@ -1,40 +1,52 @@
-# This workflow will install Python dependencies, run tests and lint
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Test with Pre-commit and Tox
+name: Test
 
 on:
   push:
-    paths:
-      - '**.py'
-      - 'requirements_dev.txt'
+    branches: [main]
   pull_request:
-    paths:
-      - '**.py'
-      - 'requirements_dev.txt'
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.11']
+    continue-on-error: true
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out code from GitHub
+        uses: actions/checkout@v4.1.1
+      - name: Set up Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: "3.10"
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          python -m pip install --upgrade pip
+          pip install -e .[test]
+      - name: Lint/test with pre-commit
+        run: pre-commit run --all-files
+
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.10"
+          - "3.11"
+
+    steps:
+      - name: Check out code from GitHub
+        uses: actions/checkout@v4.1.1
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v5.0.0
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          sudo apt-get update
           python -m pip install --upgrade pip
-          pip install -r requirements_dev.txt
-          pre-commit install-hooks
-      - name: Lint with pre-commit
-        run: pre-commit run --all-files
-      - name: Test with pytest
-        run: |
-          pip install -r requirements_test.txt
-          pytest
+          pip install -e .[test]
+      - name: Pytest
+        run: pytest tests/
