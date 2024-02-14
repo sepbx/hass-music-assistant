@@ -1,4 +1,5 @@
 """MediaPlayer platform for Music Assistant integration."""
+
 from __future__ import annotations
 
 import asyncio
@@ -235,9 +236,9 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
             and queue.current_item.media_item
             and queue.current_item.media_item.metadata
         ):
-            attrs[
-                ATTR_STREAM_TITLE
-            ] = queue.current_item.media_item.metadata.description
+            attrs[ATTR_STREAM_TITLE] = (
+                queue.current_item.media_item.metadata.description
+            )
         return attrs
 
     async def async_on_update(self) -> None:
