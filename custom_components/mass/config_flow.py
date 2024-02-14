@@ -1,4 +1,5 @@
 """Config flow for MusicAssistant integration."""
+
 from __future__ import annotations
 
 import asyncio
@@ -427,9 +428,12 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             ),
             vol.Optional(
                 CONF_ASSIST_AUTO_EXPOSE_PLAYERS,
-                default=config_entry.data.get(CONF_ASSIST_AUTO_EXPOSE_PLAYERS)
-                if config_entry.data.get(CONF_ASSIST_AUTO_EXPOSE_PLAYERS) is not None
-                else False,
+                default=(
+                    config_entry.data.get(CONF_ASSIST_AUTO_EXPOSE_PLAYERS)
+                    if config_entry.data.get(CONF_ASSIST_AUTO_EXPOSE_PLAYERS)
+                    is not None
+                    else False
+                ),
             ): bool,
         }
 

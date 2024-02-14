@@ -235,7 +235,7 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):
 
 @patch("custom_components.mass.config_flow.MusicAssistantClient")
 async def test_flow_discovery_confirm_creates_config_entry_with_none_type_conversation_agent(
-    m_mass, hass  # noqa: ARG001
+    m_mass, hass
 ):
     """Test the config entry is successfully created."""
     with pytest.raises(InvalidData):
