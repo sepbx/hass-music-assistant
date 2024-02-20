@@ -32,7 +32,7 @@ body:
       description: >
         Can be found in: HACS>>INTEGRATIONS>>MUSIC ASSISTANT
         For example: 2024.1.0
-  - type: dropdown
+  - type: checkboxes
     validations:
       required: true
     attributes:
@@ -40,8 +40,8 @@ body:
       description: |
         You must answer yes to this
       options:
-        - Yes
-        - No
+        - label: "Yes"
+          required: true
   - type: textarea
     validations:
       required: true
