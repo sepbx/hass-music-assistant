@@ -236,9 +236,9 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
             and queue.current_item.media_item
             and queue.current_item.media_item.metadata
         ):
-            attrs[
-                ATTR_STREAM_TITLE
-            ] = queue.current_item.media_item.metadata.description
+            attrs[ATTR_STREAM_TITLE] = (
+                queue.current_item.media_item.metadata.description
+            )
         return attrs
 
     async def async_on_update(self) -> None:
@@ -464,7 +464,7 @@ class MassPlayer(MassBaseEntity, MediaPlayerEntity):
         media_id: list[str],
         artist: str | None = None,
         album: str | None = None,
-        enqueue: MediaPlayerEnqueue | QueueOption | None = QueueOption.PLAY,
+        enqueue: MediaPlayerEnqueue | QueueOption | None = None,
         announce: bool | None = None,
         radio_mode: bool | None = None,
         media_type: str | None = None,
