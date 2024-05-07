@@ -8,9 +8,9 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-  "async_timeout>=4.0.3",
-  "homeassistant>=2024.3.0",
-  "music-assistant>=2.0.0b112",
+  "async_timeout",
+  "homeassistant",
+  "music-assistant",
 ]
 description = "Music Assistant (BETA) Home Assistant Integration"
 license = {text = "Apache-2.0"}
@@ -28,7 +28,6 @@ test = [
   "pre-commit-hooks==4.6.0",
   "pylint==3.1.0",
   "ruff==0.4.3",
-  "safety==3.0.1",
   "tomli==2.0.1",
   "pytest-homeassistant-custom-component==0.13.122",
   "zeroconf",
