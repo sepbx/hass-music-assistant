@@ -1,6 +1,6 @@
 {
   "domain": "mass",
-  "name": "Music Assistant (BETA)",
+  "name": "Music Assistant",
   "after_dependencies": [
     "media_source",
     "media_player"
