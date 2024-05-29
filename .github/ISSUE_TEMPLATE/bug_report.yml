@@ -20,7 +20,7 @@ body:
       required: true
     attributes:
       label: What version of Music Assistant has the issue?
-      placeholder: 2022.x.y
+      placeholder: 2.0.0
       description: >
         Can be found in: MA SETTINIGS>>CORE
         For example: 2.0.0b100
@@ -33,7 +33,7 @@ body:
       placeholder: 2024.x.y
       description: >
         Can be found in: HACS>>INTEGRATIONS>>MUSIC ASSISTANT
-        For example: 2024.3.1
+        For example: 2024.5.1
   - type: checkboxes
     validations:
       required: true
