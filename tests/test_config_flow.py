@@ -16,10 +16,8 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.mass import config_flow
 from custom_components.mass.config_flow import (
     CONF_ASSIST_AUTO_EXPOSE_PLAYERS,
-    CONF_INTEGRATION_CREATED_ADDON,
     CONF_OPENAI_AGENT_ID,
     CONF_URL,
-    CONF_USE_ADDON,
 )
 from custom_components.mass.const import DOMAIN
 
@@ -27,8 +25,9 @@ DEFAULT_TITLE = "Music Assistant"
 
 VALID_CONFIG = {
     CONF_URL: "http://localhost:8095",
-    CONF_USE_ADDON: False,
-    CONF_INTEGRATION_CREATED_ADDON: False,
+}
+VALID_OPTIONS_CONFIG = {
+    CONF_URL: "http://localhost:8095",
     CONF_OPENAI_AGENT_ID: "2be183ad64ff0d464a94bd2915140a55",
     CONF_ASSIST_AUTO_EXPOSE_PLAYERS: True,
 }
@@ -115,37 +114,6 @@ async def test_flow_user_init_manual_schema(hass):
     data_schema = result.get("data_schema")
     assert data_schema is not None
     assert data_schema.schema[CONF_URL] is str
-    assert isinstance(
-        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
-    )
-    assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
-
-
-async def test_flow_user_init_supervisor_schema(hass):
-    """Test the initialization of the form in the first step of the config flow."""
-    hass.config.components.add("hassio")
-    result = await hass.config_entries.flow.async_init(
-        config_flow.DOMAIN, context={"source": "user"}
-    )
-    expected = {
-        "data_schema": config_flow.ON_SUPERVISOR_SCHEMA,
-        "description_placeholders": None,
-        "errors": None,
-        "flow_id": mock.ANY,
-        "handler": "mass",
-        "step_id": "on_supervisor",
-        "last_step": None,
-        "preview": None,
-        "type": "form",
-    }
-    assert result.get("step_id") == expected.get("step_id")
-    data_schema = result.get("data_schema")
-    assert data_schema is not None
-    assert data_schema.schema[CONF_USE_ADDON] is bool
-    assert isinstance(
-        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
-    )
-    assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
 
 
 async def test_flow_user_init_zeroconf_schema(hass):
@@ -154,7 +122,7 @@ async def test_flow_user_init_zeroconf_schema(hass):
         config_flow.DOMAIN, context={"source": "zeroconf"}, data=ZEROCONF_DATA
     )
     expected = {
-        "data_schema": config_flow.get_zeroconf_schema(),
+        "data_schema": None,
         "description_placeholders": None,
         "errors": None,
         "flow_id": mock.ANY,
@@ -166,11 +134,7 @@ async def test_flow_user_init_zeroconf_schema(hass):
     }
     assert result.get("step_id") == expected.get("step_id")
     data_schema = result.get("data_schema")
-    assert data_schema is not None
-    assert isinstance(
-        data_schema.schema[CONF_OPENAI_AGENT_ID], ConversationAgentSelector
-    )
-    assert data_schema.schema[CONF_ASSIST_AUTO_EXPOSE_PLAYERS] is bool
+    assert data_schema is None
 
 
 @patch("custom_components.mass.config_flow.get_server_info")
@@ -210,24 +174,17 @@ async def test_flow_discovery_confirm_creates_config_entry(m_mass, hass):
     )
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"],
-        user_input={
-            CONF_OPENAI_AGENT_ID: "2be183ad64ff0d464a94bd2915140a55",
-            CONF_ASSIST_AUTO_EXPOSE_PLAYERS: True,
-        },
     )
     expected = {
-        "context": {"source": "zeroconf", "unique_id": "1234"},
-        "version": 1,
-        "type": "create_entry",
+        "type": "form",
         "flow_id": mock.ANY,
         "handler": "mass",
-        "minor_version": 1,
-        "title": DEFAULT_TITLE,
-        "data": VALID_CONFIG,
-        "description": None,
-        "description_placeholders": None,
-        "result": mock.ANY,
-        "options": {},
+        "data_schema": None,
+        "errors": None,
+        "description_placeholders": {"url": "http://localhost:8095"},
+        "last_step": None,
+        "preview": None,
+        "step_id": "discovery_confirm",
     }
     assert expected == result
 
