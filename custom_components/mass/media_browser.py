@@ -83,12 +83,6 @@ async def async_browse_media(
         return await build_main_listing(hass)
 
     assert media_content_type is not None
-
-    if media_source.is_media_source_id(media_content_id):
-        return await media_source.async_browse_media(
-            hass, media_content_id, content_filter=media_source_filter
-        )
-
     if media_content_id == LIBRARY_ARTISTS:
         return await build_artists_listing(mass)
     if media_content_id == LIBRARY_ALBUMS:
